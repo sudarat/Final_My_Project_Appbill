@@ -1,0 +1,97 @@
+<table>
+  <tr>
+    <tr>
+    <td><h1>รายการใบกำกับภาษี</h1><hr> 
+      <%= link_to new_q, new_quotation_path %>
+      <%= link_to allm, taxinvoices_path %><%= link_to notcompletem, taxinvoices_twait_path %><%= link_to deliverm, taxinvoices_tcomplete_path %>
+    </td>
+    <td>
+      <%= form_tag taxinvoices_twait_path, :method => 'get', :id => "taxinvoices_search" do %>
+	<p align=right>
+	  <b>ค้นหาจาก :: </b><%= select_tag(:col, options_for_select([['ลูกค้า', 1], ['ชื่องาน', 2]], params[:col] )) %><br/>
+	  <%= text_field_tag :search, params[:search], :size => 10%>
+	  <%= submit_tag "ค้นหา", :name => nil %>
+	</p>
+	<div id="taxinvoices"><%= render 'taxinvoices/taxinvoices' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+<%= will_paginate @taxinvoices,:class=>"right" %>
+<% if (request.url)["custname"] != nil %>
+<table><%else%><table class="pretty"><% end %>
+
+  <tr style="index">
+    <th width="10px"><center><%= sortable "doc_number","เลขที่" %></th>
+
+    <% if (request.url)["search"] == nil%>
+      <% if (request.url)=='http://localhost:3000/taxinvoices/twait' || ( (request.url)["direction=asc&sort=custname"] == nil && (request.url)["search"] == nil )  %>
+	<th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/taxinvoices/twait?direction=asc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=desc&sort=custname' %> <%= image_tag "down_arrow.gif" %><% end %></th>
+      <% else %><th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/taxinvoices/twait?direction=desc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=asc&sort=custname' %> <%= image_tag "up_arrow.gif" %><% end %></th>
+      <% end %>
+    <% else %>
+      <% @se = params[:search] %><% @di = params[:direction] %><% @so = params[:sort] %><% @col = params[:col]%>
+      <% if @di !='asc' && @di != 'desc' %><% cookies[:linkcust] = 'http://localhost:3000/taxinvoices/twait?&search='+@se+'&direction=asc&sort=custname&col='+@col  %>
+	<th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+	<% cookies.delete :linkcust %></th>
+      <% else %><% if (request.url)["custname"] == nil %><% cookies[:linkcust] = 'http://localhost:3000/taxinvoices/twait?&search='+@se+'&direction=asc&sort=custname&col='+@col  %>
+		  <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		  <% cookies.delete :linkcust %></th>
+		  <% else %>
+		    <% if @di =='asc' %><% cookies[:linkcust] = 'http://localhost:3000/taxinvoices/twait?&search='+@se+'&direction=desc&sort=custname&col='+@col  %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "up_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% else %><% cookies[:linkcust] = 'http://localhost:3000/taxinvoices/twait?&search='+@se+'&direction=asc&sort=custname&col='+@col  %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% end %>
+		  <% end %>
+		<% end %>
+    <% end %>
+
+    <th width="500px"><center><%= sortable "title" ,"ชื่องาน" %></th>
+    <th width="120px"><center><%= sortable "complete","เสร็จสมบูรณ์" %></th>
+    <th width="100px"><center><%= sortable "cancel","ใช้งาน" %></th>
+    <th width="100px"><center><%= sortable "updated_at","แก้ไขล่าสุด" %></th>
+    <th width="90px"></th>
+  </tr>
+
+<% @taxinvoices.each do |taxinvoice| %>
+  <% if taxinvoice.cancel == false && taxinvoice.complete == false %>
+   <tr BGCOLOR="#fefefe">
+    <td class="bordertop bold">T<%= taxinvoice.doc_number[0..1] %>/<%= taxinvoice.doc_number[2..5] %></td>
+    <td class="bordertop"><center><% if taxinvoice.customer.custname.length <= 15 %><%= link_to taxinvoice.customer.custname , customer_path(taxinvoice.customer_id)%>
+	<% else %><%= link_to taxinvoice.customer.custname[0..15]+'...', customer_path(taxinvoice.customer_id) %><% end %>
+    </td>
+    <td class="bordertop bold"><%= taxinvoice.title %></td>
+    <td class="bordertop bold"><center><% taxinvoice.complete %><% if taxinvoice.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+    <td class="bordertop bold"><center><% taxinvoice.cancel %><% if taxinvoice.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+    <td class="bordertop bold"><center><%= taxinvoice.updated_at.strftime("%Y-%m-%d") %></td>
+    <td class="bordertop bold"><% if taxinvoice.cancel || taxinvoice.complete %><%= edit_non%><% else %><%= link_to edit, edit_taxinvoice_path(taxinvoice) %><% end %>
+	<%= link_to show, taxinvoice %>
+    </td>
+<!--     <td><%= link_to 'Destroy', taxinvoice, :confirm => 'Are you sure?', :method => :delete %></td> -->
+   </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">T<%= taxinvoice.doc_number[0..1] %>/<%= taxinvoice.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if taxinvoice.customer.custname.length <= 15 %><%= link_to taxinvoice.customer.custname , customer_path(taxinvoice.customer_id)%>
+	<% else %><%= link_to taxinvoice.customer.custname[0..15]+'...', customer_path(taxinvoice.customer_id) %><% end %>
+      </td>
+      <td class="bordertop nobold"><%= taxinvoice.title %></td>
+      <td class="bordertop nobold"><center><% taxinvoice.complete %><% if taxinvoice.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% taxinvoice.cancel %><% if taxinvoice.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= taxinvoice.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if taxinvoice.cancel || taxinvoice.complete %><%= edit_non%><% else %><%= link_to edit, edit_taxinvoice_path(taxinvoice) %><% end %>
+	<%= link_to show, taxinvoice %>
+      </td>
+<!--     <td><%= link_to 'Destroy', taxinvoice, :confirm => 'Are you sure?', :method => :delete %></td> -->
+    </tr>
+  <% end %>
+<% end %>
+</table>
+
+<br />
+<% cookies[:newq] = request.url %>

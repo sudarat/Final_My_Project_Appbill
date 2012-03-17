@@ -1,0 +1,164 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>ใบเสนอราคา</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>เลขที่ : </b></td>
+      <td>Q<%= @quotation.doc_number[0..1] %>/<%= @quotation.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ลูกค้า : </b></td>
+      <td><%= @quotation.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ชื่องาน : </b></td>
+      <td><%= @quotation.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>รายละเอียด : </b></td>
+      <td><%= raw @quotation.detail %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ระยะเวลาดำเนินการ(วัน) : </b></td>
+      <td><%= @quotation.terms %> <b>วัน</b></td>
+    </p>
+  </tr>
+  <tr valign=top>
+    <p>
+      <td ><b>เงื่อนไขการรับประกัน : </b></td>
+      <% if @quotation.condition == '<br>' %><td><%= '-' %></td>
+      <% else %>
+      <td><%= raw @quotation.condition %></td>
+      <% end %>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>วันสิ้นสุดการเสนอราคา : </b></td>
+      <td><%= @quotation.doc_date.strftime("%Y-%m-%d") %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @quotation.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ผลอนุมัติ : </b></td>
+      <td><% if @quotation.approve  %>
+	    <%= 'อนุมัติ'%>
+	  <% else if @quotation.approve == nil %>
+		    <%= 'รอผลอนุมัติ' %>
+		  <% else %>
+		    <%= 'ปฎิเสธ' %>
+		  <% end %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>เอกสารถัดไป : </b></td>
+      <td><% if @quotation.approve  %>
+	    <% if @quotation.complete  %>
+	      <font color=green ><%= 'ออกใบส่งของครบ' %></font>
+	    <% else %>
+	      <font color=red><%= 'ออกใบส่งของไม่ครบ' %></font>
+	    <% end %>
+	  <% else if @quotation.approve == nil%><%= '-' %>
+		  <% else %><%= 'ไม่อนุมัติ' %>
+	  <% end %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+
+  <% if @quotation.cancel == false && @quotation.complete == false && @quotation.approve == true %>
+ <tr>
+   <td></td>
+    <td>
+
+<!-- เช็คถ้ามีรายการที่ยังไม่ได้ออกใบส่งของ ให้แสดง link -->
+	<% if @quotation.approve && @quotation.complete == false %>
+	  <%= link_to nexti, new_invoice_path %>
+	<% end %>
+    </td>
+  </tr>
+  <%end%>
+
+  <tr>
+    <p>
+      <td><b>สถานะ : </b></td>
+      <td><% if @quotation.cancel  %>
+	    <%= 'ยกเลิก'%>
+	  <% else %><%= 'ใช้งาน' %>
+	  <% end %>
+	  <% @quotation.cancel %>
+      </td>
+    </p>
+  </tr>
+
+<% if @quotation.paper.url != '/papers/original/missing.png' %>
+
+
+  <tr>
+    <p>
+      <td><b>เอกสารเพิ่มเติม :</b></td>
+      <td><%= @quotation.paper_file_name %><br/><%= link_to 'Download', @quotation.paper.url %></td>
+    </p>
+  </tr>
+<% end %>
+</font>
+</table>
+<!-- <center><h3>รายการสินค้า</h3></center> -->
+<!--  >>>> <%= link_to 'Add item', new_quotation_item_path(@quotation) %> <<<< -->
+<%= render :partial => "items/item" %>
+
+<!-- เก็บ cookies เอาไว้บันทึก invoice -->
+<% cookies[:quotation_id] = @quotation.id %>
+<br />
+
+<!-- ######################################################### -->
+
+<!-- ######################################################### -->
+
+
+
+
+<!-- ######################################################### -->
+
+<% if @quotation.cancel || @quotation.approve || @quotation.approve==false %> <td><%= edit_non %></td>
+<% else %><td><%= link_to edit, edit_quotation_path(@quotation) %></td>
+<% end %> 
+
+<% cookies[:back] = request.referer %>
+<%= link_to back, quotations_path %>
+
+<center>
+
+
+<%= printicon %> :: 
+<%= link_to printr, printred_quotation_path(@quotation) %>
+<%= link_to printb, printblue_quotation_path(@quotation) %>
+<%= link_to printw, printwhite_quotation_path(@quotation) %>
+</center>
+

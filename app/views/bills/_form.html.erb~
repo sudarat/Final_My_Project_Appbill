@@ -1,0 +1,58 @@
+<%= form_for(@bill) do |f| %>
+  <% if @bill.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@bill.errors.count, "error") %> prohibited this document from being saved:</h2>
+
+      <ul>
+      <% @bill.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %><br>
+<font color=black>
+<%= semantic_form_for(@bill) do |f| %>
+	<%= f.inputs do %>		
+		<b><%= "เลขที่" %></b><font style="margin-left : 16.3em; ">B<%= @bill.doc_number[0..1] %>/<%= @bill.doc_number[2..5] %>
+	<% end %>
+<% end %>
+
+<%= semantic_form_for(@invoice) do |f| %>
+	<%= f.inputs do %>		
+<!-- 		<%= f.input :customer ,:label=>"Customer ", :as => :select , :member_label => :custname  ,:input_html => { :disabled => true } %>  -->
+		<b><%= 'ลูกค้า' %></b><font style="margin-left : 16.1em; "><%= @invoice.customer.custname%></font></br></br>
+<!-- 		<%= f.input :title ,:label=>"Title ",:input_html => { :disabled => true } %> -->
+		<b><%= 'ชื่องาน' %></b><font style="margin-left : 15.7em; "><%= @invoice.title%></font></br></br>
+	<% end %>
+<% end %>
+
+<%= semantic_form_for(@bill) do |f| %>
+	
+	<b><%= 'อัตราภาษี' %></b><font style="margin-left : 14em; ">
+		    <% if @invoice.tax %>
+		      คิดภาษี 7%
+		    <% else %>
+		      ไม่คิดภาษี
+		    <% end %>
+		  </font></br></br>
+	<%= f.inputs do %>
+	   <font style="font-size : 0.85em;"><!--<%= f.input :tax, :as => :radio, :label => "อัตราภาษี", :collection => {"ภาษี 7%" => true, "ไม่คิดภาษี" =>  false} %>--></font>
+    <% if (request.url)["new"] == nil%>
+      <font style="font-size : 0.85em;"><%= f.input :approve, :as => :radio, :label => "สถานะการส่ง", :collection => {"ยังไม่ส่งลูกค้า" => false, "ส่งลูกค้าเรียบร้อย" => true}, :default => false %></font>
+    <% else %>
+<!--       <font size="2.5"><%= f.input :approve, :as => :radio, :label => "Deliver", :collection => {"Non deliver" => false, "Deliver" => true}, :default => false ,:input_html => { :disabled => true } %></font> -->
+    <% end %>
+<!--  CANCLE -->
+    <% if (request.url)["new"] == nil%>
+      <font style="font-size : 0.85em;"><%= f.input :cancel, :as => :radio, :label => "สถานะ"  , :collection => {"ใช้งาน" => false, "ยกเลิก" => true}, :default => false  %>
+    <% else %>
+<!--       <font size="2.5"><%= f.input :cancel, :as => :radio, :label => "Status"  , :collection => {"Ready" => false, "Cancel" => true}, :default => false ,:input_html => { :disabled => true } %> -->
+    <% end %>
+
+		
+		<!--  CANCLE -->
+		
+	<% end %>
+	<%= f.buttons %>
+<% end %>

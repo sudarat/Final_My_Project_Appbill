@@ -1,0 +1,14 @@
+
+<h1>Edit item</h1><br />
+
+
+<%= render "form" %> 
+
+
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'quotations'  %>
+<%= link_to back, manageitem_quotation_path(@quotation) %>
+<% end %>
+
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'receipts'  %>
+<%= link_to back, manageitem_receipt_path(@receipt) %>
+<% end %>

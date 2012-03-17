@@ -1,0 +1,102 @@
+<table>
+  <tr>
+    <td><h1>รายการใบเสร็จรับเงิน</h1><hr>
+      <%= link_to new_q, new_quotation_path %>
+      <%= link_to allm, bills_path %><%= link_to waitm, bills_bwait_path %><%= link_to notcompletem, bills_bnotcomplete_path %><%= link_to completem, bills_bcomplete_path %>
+    </td>
+    <td>
+      <%= form_tag bills_bcomplete_path, :method => 'get', :id => "bills_search" do %>
+	<p align=right>
+	  <b>ค้นหาจาก :: </b><%= select_tag(:col, options_for_select([['ลูกค้า', 1], ['ชื่องาน', 2]], params[:col] )) %><br/>
+	  <%= text_field_tag :search, params[:search], :size => 10%>
+	  <%= submit_tag "ค้นหา", :name => nil %>
+	</p>
+	<div id="bills"><%= render 'bills/bills' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= will_paginate @bills,:class=>"right" %>
+<% if (request.url)["custname"] != nil %>
+<table><%else%><table class="pretty"><% end %>
+
+  <tr style="index">
+    <th width="10px"><center><%= sortable "doc_number","เลขที่" %></th>
+
+    <% if (request.url)["search"] == nil%>
+      <% if (request.url)=='http://localhost:3000/bills/bcomplete' || ( (request.url)["direction=asc&sort=custname"] == nil && (request.url)["search"] == nil )  %>
+	<th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/bills/bcomplete?direction=asc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=desc&sort=custname' %> <%= image_tag "down_arrow.gif" %><% end %></th>
+      <% else %><th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/bills/bcomplete?direction=desc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=asc&sort=custname' %> <%= image_tag "up_arrow.gif" %><% end %></th>
+      <% end %>
+    <% else %>
+      <% @se = params[:search] %><% @di = params[:direction] %><% @so = params[:sort] %><% @col = params[:col]%>
+      <% if @di !='asc' && @di != 'desc' %><% cookies[:linkcust] = 'http://localhost:3000/bills/bcomplete?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+	<th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+	<% cookies.delete :linkcust %></th>
+      <% else %><% if (request.url)["custname"] == nil %><% cookies[:linkcust] = 'http://localhost:3000/bills/bcomplete?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		  <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		  <% cookies.delete :linkcust %></th>
+		  <% else %>
+		    <% if @di =='asc' %><% cookies[:linkcust] = 'http://localhost:3000/bills/bcomplete?&search='+@se+'&direction=desc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "up_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% else %><% cookies[:linkcust] = 'http://localhost:3000/bills/bcomplete?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% end %>
+		  <% end %>
+		<% end %>
+    <% end %>
+
+    <th width="455px"><center><%= sortable "title" ,"ชื่องาน"%></th>
+    <th width="60px"><center><%= sortable "approve" ,"สถานะการส่ง"%></th>
+    <th width="10px"><center><%= sortable "complete","เสร็จสมบูรณ์" %></th>    
+    <th width="10px"><center><%= sortable "cancel","ใช้งาน" %></th>
+    <th width="100px"><center><%= sortable "updated_at","แก้ไขล่าสุด" %></th>
+    <th width="90px"></th>
+  </tr>
+
+<% @bills.each do |bill| %>
+  <% if (bill.cancel == false && bill.approve && bill.complete == false) || (bill.cancel == false && bill.approve==false) %>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">B<%= bill.doc_number[0..1] %>/<%= bill.doc_number[2..5] %></td>
+      <td class="bordertop bold"><center><% if bill.customer.custname.length <= 15 %><%= link_to bill.customer.custname , customer_path(bill.customer_id)%>
+	<% else %><%= link_to bill.customer.custname[0..15]+'...', customer_path(bill.customer_id) %><% end %>
+      </td>
+      <td class="bordertop bold"><%= bill.title %></td>
+      <td class="bordertop"><center><% if bill.approve %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop bold"><center><% if bill.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop bold"><center><% if bill.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop bold"><center><%= bill.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop bold"><% if bill.cancel || bill.approve %><%= edit_non%><% else %><%= link_to edit, edit_bill_path(bill) %><% end %>
+	<%= link_to show, bill %>
+	<% if bill.cancel == false && bill.approve && bill.complete == false %><%= link_to nextt,nextdoc_bill_path(bill) %><% else %><%= nextt_non %><% end %>
+      </td>
+    </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">B<%= bill.doc_number[0..1] %>/<%= bill.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if bill.customer.custname.length <= 15 %><%= link_to bill.customer.custname , customer_path(bill.customer_id)%>
+	<% else %><%= link_to bill.customer.custname[0..15]+'...', customer_path(bill.customer_id) %><% end %>
+      </td>
+      <td class="bordertop nobold"><%= bill.title %></td>
+      <td class="bordertop nobold"><center><% if bill.approve %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop"><center><% if bill.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% if bill.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= bill.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if bill.cancel || bill.approve %><%= edit_non%><% else %><%= link_to edit, edit_bill_path(bill) %><% end %>
+	<%= link_to show, bill %>
+	<%= nextt_non %>
+      </td>
+    </tr>
+  <% end %>
+
+<% end %>
+</table>
+
+<br />
+
+<% cookies[:newq] = request.url %>

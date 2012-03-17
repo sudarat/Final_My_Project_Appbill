@@ -1,0 +1,29 @@
+<% if @quotation.cancel || @quotation.approve %>
+  <% flash[:notice] = "This quotation is not edit !! B. Cancle or Approve." %>
+
+  <% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+  <% end %>
+
+  <% flash.delete(:notice) %>
+<% else %>
+
+  <% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+  <% end %>
+
+  <h1>แก้ไขข้อมูลใบเสนอราคา</h1>
+  <% cookies[:backnewcust] = request.url %>
+  <%= render 'form' %>
+  <br /><br /><br />
+
+  <!-- ###### <%= link_to 'Manage item', manageitem_quotation_path(@quotation) %> ##### -->
+  <!--
+  <h3>รายการสินค้า</h3>
+  <%= render :partial => "items/item" %>
+  >>>> <%= link_to 'Add item', new_quotation_item_path(@quotation) %> <<<<
+  <br />-->
+<!--   <%= link_to 'Show', @quotation %> | -->
+  <% cookies[:back] = request.referer %>
+  <%= link_to back, request.referer %>
+ <% end %>

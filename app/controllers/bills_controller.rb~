@@ -1,0 +1,385 @@
+class BillsController < ApplicationController 
+  
+  helper_method :run_docnumber, :sort_column, :sort_direction
+  
+  # GET /bills
+  # GET /bills.xml
+  def index
+#     @bills = Bill.all
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+    
+    
+    
+     #       @bills = Bill.customer
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @bills }
+      format.json  { render :json => @bills }
+    end
+  end
+
+  # GET /bills/1
+  # GET /bills/1.xml
+  def show
+    @bill = Bill.find(params[:id])
+    if @bill.complete 
+      @taxinvoice = Taxinvoice.where(:ref_id => @bill.id)
+    end
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @bill }
+      format.json  { render :json => @bill }
+    end
+  end
+
+  # GET /bill/new
+  # GET /bill/new.xml
+  def new
+    @invoice = Invoice.find(cookies[:invoice_id])
+    @bill = Bill.new
+    run_docnumber
+    default_cancel
+    @bill.tax = @invoice.tax
+    @bill.approve = false
+    @bill.complete = false
+    respond_to do |format|
+      format.html # new.html.erb
+      format.xml  { render :xml => @bill }
+      format.json  { render :json => @bill }
+    end
+  end
+
+  # GET /bills/1/edit
+  def edit
+    @bill = Bill.find(params[:id])
+    @invoice = Invoice.find(@bill.ref_id)
+  end
+
+  # POST /bills
+  # POST /bills.xml
+  def create
+    @invoice = Invoice.find(cookies[:invoice_id])
+    @bill = Bill.new(params[:bill])
+    @bill.ref_id = @invoice.id
+    @bill.title = @invoice.title
+    @bill.customer = @invoice.customer
+    @bill.approve = false
+    @bill.complete = false
+    @bill.tax = @invoice.tax
+    run_docnumber
+    default_cancel
+    respond_to do |format|
+      if @bill.save
+	@items=Item.find(:all, :conditions => { :invoice_id => @invoice.id })
+			@items.each do |item|
+			  item.bill_id = @bill.id   #
+			  item.update_attributes(params[:item])		
+			end
+	@invoice.complete=true
+	@invoice.update_attributes(params[:invoice]) 
+	cookies.delete :invoice_id
+        format.html { redirect_to(@bill, :notice => 'Bill was successfully created.') }
+        format.xml  { render :xml => @bill, :status => :created, :location => @bill }
+      else
+        format.html { render :action => "new" }
+        format.xml  { render :xml => @bill.errors, :status => :unprocessable_entity }
+      end
+    end
+    
+  end
+
+  # PUT /bills/1
+  # PUT /bills/1.xml
+  def update
+    @bill = Bill.find(params[:id])
+    
+    respond_to do |format|
+      if @bill.update_attributes(params[:bill])
+	if @bill.cancel == true
+	  @items=Item.find(:all, :conditions => { :bill_id => @bill.id })
+			@items.each do |item|
+			  @i = Item.new 
+			  @i.description = item.description
+			  @i.quantity = item.quantity
+			  @i.unit_price = item.unit_price
+			  @i.bill_id = item.bill_id
+			  @i.save
+
+			  item.bill_id = nil  #
+			  item.update_attributes(params[:item])		
+			end
+	  @invoice = Invoice.find(@bill.ref_id)
+	  @invoice.complete=false
+	  @invoice.update_attributes(params[:invoice]) 
+	end
+        format.html { redirect_to(@bill, :notice => 'Bill was successfully updated.') }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @bill.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /bills/1
+  # DELETE /bills/1.xml
+  def destroy
+    @bill = Bill.find(params[:id])
+     @items=Item.find(:all, :conditions => { :bill_id => @bill.id })
+			@items.each do |item|
+			  @i = Item.new 
+			  @i.description = item.description
+			  @i.quantity = item.quantity
+			  @i.unit_price = item.unit_price
+			  @i.bill_id = item.bill_id
+			  @i.save
+
+			  item.bill_id = nil  #
+			  item.update_attributes(params[:item])		
+			end
+	  @invoice = Invoice.find(@bill.ref_id)
+	  @invoice.complete=false
+	  @invoice.update_attributes(params[:invoice]) 
+    @bill.destroy
+
+    respond_to do |format|
+      format.html { redirect_to(bills_url) }
+      format.xml  { head :ok }
+    end
+  end
+  
+  def printred
+    @company = Company.first
+    @bill = Bill.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def printwhite
+    @company = Company.first
+    @bill = Bill.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def printblue
+    @company = Company.first
+    @bill = Bill.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def nextdoc
+    @bill = Bill.find(params[:id])
+    cookies[:bill_id] = @bill.id
+    redirect_to(new_taxinvoice_path)
+  end
+  
+  def bwait
+#     @bills = Bill.all
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => false, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+     #       @bills = Bill.customer
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @bills }
+      format.json  { render :json => @bills }
+    end
+  end
+  
+  def bcomplete
+#     @bills = Bill.all
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => true ).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end  
+     #       @bills = Bill.customer
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @bills }
+      format.json  { render :json => @bills }
+    end
+  end
+  
+  def bnotcomplete
+#     @bills = Bill.all
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @bills = Bill.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @bills = Bill.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @bills = Bill.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).where(:approve => true, :cancel => false,:complete => false ).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @bills = Bill.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+    
+    
+    
+     #       @bills = Bill.customer
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @bills }
+      format.json  { render :json => @bills }
+    end
+  end
+  
+  private
+  
+  def run_docnumber
+    y=(Time.now.year+543).to_s.split("25").last
+      if Bill.find(:all).empty?
+	@bill.doc_number = y+'0001'
+      else if y != Bill.last.doc_number[0..1]
+	      @bill.doc_number = y+'0001'
+	   else
+	      i = Bill.last.doc_number
+	      n = i[2..5].to_i+1 
+	      if n<10 
+		@bill.doc_number = y+'000'+n.to_s 
+	      else if n<100
+		    @bill.doc_number = y+'00'+n.to_s 
+		   else if n<1000 
+			  @bill.doc_number = y+'0'+n.to_s 
+			else if n<=9999
+			       @bill.doc_number = y+n.to_s 
+			     else 
+			       @bill.doc_number = 'Do not create bill !!!' 
+			     end  
+		        end
+		   end
+	      end 
+	    end
+       end 
+  end
+  
+  def default_cancel
+    @bill.cancel = false
+  end
+  
+  
+  def sort_column
+    Bill.column_names.include?(params[:sort]) ? params[:sort] : "updated_at"
+  end
+  
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
+  end
+  
+end

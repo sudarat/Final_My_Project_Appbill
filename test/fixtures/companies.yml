@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  compname: MyString
+  compaddress: MyText
+  comptel: MyString
+  compfax: MyString
+  comptax: MyString
+  compauthor_name: MyString
+  compauthor_surname: MyString
+  compauthor_position: MyString
+  compauthor_tel: MyString
+
+two:
+  compname: MyString
+  compaddress: MyText
+  comptel: MyString
+  compfax: MyString
+  comptax: MyString
+  compauthor_name: MyString
+  compauthor_surname: MyString
+  compauthor_position: MyString
+  compauthor_tel: MyString

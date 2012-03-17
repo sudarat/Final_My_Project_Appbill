@@ -1,0 +1,121 @@
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<html>
+<table width="100%" height="100%" border = "0" align =center>
+<THEAD>
+  <tr height=30><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc " >
+    <tr>
+      <td width="38%" valign="top">
+	<% if @company.complogo.file? %>
+	  <%= image_tag @company.complogo.url(:print) %>
+	<% else %>
+<!-- 	  No attachment available! -->
+	<% end %>
+      </td> 
+      <td width="50%" valign="botton"><p style="margin-top : 1.5em;"><b><font size=4>ใบส่งของ</font></p></b></td> 
+    </tr>
+    </table>
+  </td></tr>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compname%></font></td>
+    <td valign="top"><font size=3><b>เลขที่: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    I<%= @invoice.doc_number[0..1] %>/<%= @invoice.doc_number[2..5] %><font color="FFFFFF"><font color="FFFFFF"></font></font></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compaddress%></font></td>
+    <td valign="top"><font size=3><b>วันที่:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    <%= Time.now.day%>/<%= "%02d" % Time.now.month%>/<%= Time.now.year+543 %></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3>
+      <% if @company.province.province_name == "กรุงเทพมหานคร" %> แขวง<%= @company.compsub_district%> เขต<%= @company.compdistrict%> <%= @company.province.province_name%>
+	<% else %>ต.<%= @company.compsub_district%> อ.<%= @company.compdistrict%> จ.<%= @company.province.province_name.split("จังหวัด").last%><% end %>
+	</font>
+    <br /></font></td>
+    <td valign="top" ><font size=3><b>เลขประจำตัวผู้เสียภาษี:</b> <%= @company.comptax[0]+'-'+@company.comptax[1..4]+'-'+@company.comptax[5..8]+'-'+@company.comptax[9] %></font></td>
+  </tr>
+</THEAD>
+<TBODY>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+<!--   <tr><td colspan=3 align="center" valign="bottom" height="90px"><h2>ใบส่งของ/ใบแจ้งหนี้</h2></td></tr> -->
+  <tr height=25><td colspan=3 valign="middle"><p><font size=3><b>ชื่องาน : </b><%= @invoice.title %></p></font></td></tr>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc ">
+    <tr align="center" class="borderbottom" valign=middle height=25>
+      <td class="borderright bgdescquo" width="55%"><font size=2><b>Description</b></td> 
+      <td class="borderright bgdescquo" width="15%"><font size=2><b>Quantity</b></td> 
+      <td class="borderright bgdescquo" width="15%"><font size=2><b>Unit Price</b></td> 
+      <td class="bgdescquo" width="15%"><font size=2 ><b>Cost</b></td></tr>
+<!--     <font size=2><%= raw(@invoice.details_html) %></font> -->
+    </tr>
+    <% @invoice.items.each do |item| %><font size=2> 
+<tr>
+  <td width="55%" class="bordertop borderright " ><font size=2><%= item.description %></font></td> 
+  <td width="15%" class="bordertop borderright " align= right><font size=2><%= item.quantity %></font></td>
+  <td width="15%" class="bordertop borderright " align= right><img src=/images/print/b.jpg , align=left><font size=2><%= number_with_delimiter(item.unit_price.round(2), :delimiter => ',')  %></font></td>
+  <td class="bordertop " width="15%" align= right><img src=/images/print/b.jpg , align=left><font size=2><%= number_with_delimiter((item.quantity*item.unit_price).round(2), :delimiter => ',')  %></font></td>
+</tr>
+</font><% end %>
+
+
+<% if @invoice.tax %>
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2></td> 
+      <td class="borderright " align="center"><font size=2>Subtotal</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= number_with_delimiter(@invoice.subtotal_html.round(2), :delimiter => ',') %></font></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 ></td> 
+      <td class="borderright" align="center"><font size=2>Tax 7.00%</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= number_with_delimiter(@invoice.tax_html.round(2), :delimiter => ',') %></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 class="bgdescquo"></td>
+      <td class="borderright bgdescquo" align="center"><font size=2 color="FFFFFF"><b>Total</b></font></td> 
+      <td align= right class="bgdescquo"><font size=2 color="FFFFFF"><img src=/images/print/bb.jpg  align=left><b><right><%= number_with_delimiter(@invoice.total_html.round(2), :delimiter => ',')%></b></td> 
+    </tr>
+<% else %>
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 class="bgdescquo"></td>
+      <td class="borderright bgdescquo" align="center"><font size=2 color="FFFFFF"><b>Total</b></font></td> 
+      <td align= right class="bgdescquo"><font size=2 color="FFFFFF"><img src=/images/print/bb.jpg  align=left><%= number_with_delimiter(@invoice.subtotal_html.round(2), :delimiter => ',') %></font></td>
+    </tr>
+<% end %>
+
+  </table>
+  </td></tr>
+</TBODY>
+
+<TFOOT>
+  <tr align=center height = "5px"><td colspan=3 valign="top">
+    <table width="100%" align="center" class="tdesc">
+      <tr valign=top align=center class="bordertop borderbottom" >
+	<td width="50%" class="borderright"><font size=2><b>ผู้รับของ</b></font></td> 
+	<td><font size=2><b>ผู้ส่งของ</b></font></td>
+      </tr>
+      <tr align = center>
+	<td class="borderbottom borderright" valign="bottom"><font size=2>วันที่  ..../..../........</font></td> 
+	<td class="borderbottom" >
+	  <font size=2>
+	  <br /><br /><% if @company.compauthor_signature.file? %>
+	    <%= image_tag @company.compauthor_signature.url(:print) %>
+	  <% else %>
+<!-- 	  No attachment available! -->
+	  <% end %><br /><br />
+	  <%= @company.compauthor_name %></font>
+	  <br />
+	  <font size=1.5><%= @company.compauthor_position %>
+	</td></tr>
+    </table>
+  </td>
+</font>
+</TFOOT>
+
+<!--  link_to "Download (PDF)",print_customer_invoice_path(@customer,@invoice,:format => "pdf")  -->

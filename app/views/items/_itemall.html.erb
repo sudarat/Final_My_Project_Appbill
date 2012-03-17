@@ -1,0 +1,44 @@
+<!--<br />itemall.invoice_id == nil ||  itemall.invoice_id == 0
+< itemall.description %>||< itemall.quantity %>||< itemall.unit_price %>||
+< link_to 'add',additeminvoice_quotation_item_path(@quotation,itemall.id) %>-->
+<% @a=0 %>
+<table >
+  <tr>
+    <th width="550" class="bgdescgra"><center>Description</center></th>
+    <th class="bgdescgra"></th>
+    <th width="100" class="bgdescgra"><center>Quntity</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Unit Price</center></th>
+    <th class="bgdescgra"></th>
+    <th width="50" class="bgdescgra"></th>
+  </tr>
+<% @quotation.items.each do |itemall| %>
+  <tr><% if itemall.invoice_id == nil ||  itemall.invoice_id == 0 %> <% @a = @a+1 %>
+    <td width="550" class="bordertop "><%= itemall.description %></td>
+    <td class="bordertop "></td>
+    <td width="100" class="bordertop "><center><%= itemall.quantity %></center></td>
+    <td class="bordertop "></td>
+    <td width="150" class="bordertop "><center><%= number_with_delimiter(itemall.unit_price.round(2), :delimiter => ',')  %></center></td>
+    <td class="bordertop ">฿</td>
+    <td class="bordertop "><%= itemall.invoice_id %>
+<!-- 	< link_to 'add',additeminvoice_quotation_item_path(@quotation,itemall.id) %> -->
+	  <%= button_to 'เพิ่ม',additeminvoice_quotation_item_path(@quotation,itemall.id) ,:method => :get , :class=>"right"%>
+	</td> 
+      <% end %>
+  </tr>
+<% end %>
+</table>
+
+<% if @a==0 %>
+  <center><font size=3 color=red>EMPTY ITEM !!</font></center>
+<% end %>
+
+
+
+<% @quotation.items.each do |itemall| %> 
+<% if itemall.invoice_id == nil || itemall.invoice_id == 0 %>
+	<% @comp = @comp+1%>
+<% end %>
+<% end %>
+
+

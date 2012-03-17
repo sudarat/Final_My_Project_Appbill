@@ -1,0 +1,96 @@
+  <% if @invoice.doc_date==Date.today %>
+    <% if @invoice.errors.any? %>
+      <div id="error_explanation">
+	<h2><%= pluralize((@invoice.errors.count)+1, "error") %> prohibited this document from being saved:</h2>
+	<br />
+	<ul>
+	<% @invoice.errors.full_messages.each do |msg| %>
+	  <li><%= msg %></li>
+	<% end %>
+	  <li><%= "ไม่สามารถเป็นวันที่ปัจจุบันได้" %></li>
+	</ul>
+      </div>
+    <% else %>
+      <div id="error_explanation">
+	<h2><%= pluralize("1", "error") %> prohibited this document from being saved:</h2>
+	<br />
+	<ul>
+	  <li><%= "ไม่สามารถเป็นวันที่ปัจจุบันได้" %></li>
+	</ul>
+      </div>
+    <% end %>
+  <% else %>
+    <% if @invoice.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@invoice.errors.count, "error") %> prohibited this document from being saved:</h2>
+      <br />
+      <ul>
+      <% @invoice.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+    <% end %>
+  <% end %>
+
+<%= semantic_form_for(@invoice) do |f| %>
+	<%= f.inputs do %>		
+		<b><%= "เลขที่" %></b><font style="margin-left : 16.3em; ">I<%= @invoice.doc_number[0..1] %>/<%= @invoice.doc_number[2..5] %>
+	<% end %>
+<% end %>
+
+<%= semantic_form_for(@quotation) do |f| %>
+	<%= f.inputs do %>	
+		
+<!-- 		<%= f.input :customer ,:label=>"ลูกค้า ", :as => :select , :member_label => :custname  ,:input_html => { :disabled => true } %>  -->
+		<b><%= 'ลูกค้า' %></b><font style="margin-left : 16.1em; "><%= @quotation.customer.custname%></font></br></br>
+<!-- 		<%= f.input :title ,:label=>"ชื่องาน ",:input_html => { :disabled => true } %> -->
+		<b><%= 'ชื่องาน' %></b><font style="margin-left : 15.7em; "><%= @quotation.title%></font></br></br>
+	<% end %>
+<% end %>
+
+
+<%= semantic_form_for(@invoice) do |f| %>
+  
+<font color="black">
+	<%= f.inputs do %>
+		
+		<b><%= 'อัตราภาษี' %></b><font style="margin-left : 14em; ">
+		    <% if @invoice.tax %>
+		      ภาษี 7%
+		    <% else %>
+		      ไม่คิดภาษี
+		    <% end %>
+		  </font></br></br>
+
+		  <%if @invoice.doc_date==nil || @invoice.doc_date < Date.today %>
+		  <li id="invoice_doc_date_input" class="string input error required stringish">
+		  <%= f.label :doc_date,'วันครบกำหนดจ่ายเงิน *' %><% CalendarDateSelect.format=(:hyphen_ampm)%><%= f.calendar_date_select  :doc_date ,:style=>"margin-left : 7.6em;" , :year_range => [0.years.ago, 10.years.from_now]%>
+		  <% if @invoice.doc_date==nil %>
+		    <br><font color="#c50000" style="margin-left : 19em;">please fill in the blank</font>
+		  <% else if @quotation.doc_date==Date.today %>
+			    <br><font color="#c50000" style="margin-left : 19em;">can't today</font>
+			  <% else %>
+			    <br><font color="#c50000" style="margin-left : 19em;">over time ago</font>
+			  <% end %>
+		  <% end %>
+		  <br /><font color=gray style="margin-left : 29.5em; font-size: 7pt;"><big>คลิกที่รูปปฏิทินกำหนดวันสุดท้ายของการชำระเงิน</big></font>
+		  </li>
+		<% else %>
+		  <%= f.label :doc_date,'วันครบกำหนดจ่ายเงิน *' %><% CalendarDateSelect.format=(:hyphen_ampm)%><%= f.calendar_date_select  :doc_date ,:style=>"margin-left : 7.6em;" , :year_range => [0.years.ago, 10.years.from_now]%>
+		  <br /><font color=gray style="margin-left : 29.5em; font-size: 7pt;"><big>คลิกที่รูปปฏิทินกำหนดวันสุดท้ายของการชำระเงิน</big></font><br /><br />
+		<% end %>
+		<% if (request.url)["new"] != nil || (request.url) == "http://localhost:3000/invoices" %>
+		  <!--<font size="2.5"><%= f.input :approve, :as => :radio, :label => "Paid ", :collection => {"Not paid" => false, "Paid" => true}, :default => false ,:input_html => { :disabled => true }%>
+		  <font size="2.5"><%= f.input :cancel, :as => :radio, :label => "Status", :collection => {"Ready" => false, "Cancel" => true}, :default => false ,:input_html => { :disabled => true }%>-->
+		  
+		<% else %>
+		  
+		  <font style="font-size : 0.85em;"><!--<%= f.input :tax, :as => :radio, :label => "อัตราภาษี", :collection => {"ภาษี 7%" => true, "ไม่คิดภาษี" =>  false} %>-->
+		  <%= f.input :approve, :as => :radio, :label => "สถานะจ่ายเงิน ", :collection => {"ยังไม่จ่ายเงิน" => nil, "จ่ายเงินแล้ว" => true}, :default => false %>
+		  <%= f.input :cancel, :as => :radio, :label => "สถานะ", :collection => {"ใช้งาน" => false, "ยกเลิก" => true}, :default => false %></font>
+		<% end %>
+	
+	<% end %>
+	<%= f.buttons %>
+<% end %>

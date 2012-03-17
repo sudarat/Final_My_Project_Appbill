@@ -1,0 +1,20 @@
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'quotations'  %>
+
+<table>
+ 
+<% @quotation.items.each do |item| %> 
+<tr>
+  <td width="55%" class="bordertop " ><%= item.description %></td> 
+  <td class="bordertop"></td>
+  <td width="15%" class="bordertop "><center><%= item.quantity %></center></td>
+  <td class="bordertop"></td>
+  <td width="15%" class="bordertop "><center><%= number_with_delimiter(item.unit_price.round(2), :delimiter => ',')  %></center></td>
+  <td class="bordertop">฿</td>
+  <td class="bordertop "><center><%= number_with_delimiter((item.quantity*item.unit_price).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop">฿</td>
+<% end %>
+</tr>
+</table>
+<% end %>
+
+

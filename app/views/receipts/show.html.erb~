@@ -1,0 +1,99 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>Receipt</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>NO. : </b></td>
+      <td>R<%= @receipt.doc_number[0..1] %>/<%= @receipt.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>Customer : </b></td>
+      <td><%= @receipt.customer.custname %></td>
+    </p>
+  </tr>
+
+  <tr>
+    <p>
+      <td><b>Address : </b></td>
+      <td><%= @receipt.customer.custaddress %> 
+	<% if @receipt.customer.custstreet != nil  %>ถนน<%= @receipt.customer.custsub_district %><% end %>
+	<% if @receipt.customer.province.province_name == "กรุงเทพมหานคร" %>แขวง<%= @receipt.customer.custsub_district %> เขต<%= @receipt.customer.custdistrict %> <%= @receipt.customer.province.province_name %>
+	<% else %>ตำบล<%= @receipt.customer.custsub_district %> อำเภอ<%= @receipt.customer.custdistrict %> <%= @receipt.customer.province.province_name %><% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @receipt.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>สถานะการส่ง : </b></td>
+      <td>
+	    <% if @receipt.complete  %>
+	      <font color=green ><%= 'ส่งเอกสารให้ลูกค้าเรียบร้อย' %></font>
+	    <% else %>
+	      <font color=red><%= 'ยังไม่ส่งเอกสารให้ลูกค้า' %></font>
+	    <% end %>
+	  
+      </td>
+    </p>
+  </tr>
+
+  <tr>
+    <p>
+      <td><b>Status : </b></td>
+      <td><% if @receipt.cancel  %>
+	    <%= 'ยกเลิก'%>
+	  <% else %><%= 'ใช้งาน' %>
+	  <% end %>
+	  <% @receipt.cancel %>
+      </td>
+    </p>
+  </tr>
+</font>
+</table>
+<!-- <center><h3>รายการสินค้า</h3></center> -->
+<!--  >>>> <%= link_to 'Add item', new_quotation_item_path(@receipt) %> <<<< -->
+<%= render :partial => "items/item" %>
+
+<!-- เก็บ cookies เอาไว้บันทึก invoice -->
+<% cookies[:receipt_id] = @receipt.id %>
+<br />
+
+<!-- ######################################################### -->
+
+<!-- ######################################################### -->
+
+
+
+
+<!-- ######################################################### -->
+
+<% if @receipt.cancel || @receipt.complete %> <td><%= edit_non %></td>
+<% else %><td><%= link_to edit, edit_receipt_path(@receipt)  %></td>
+<% end %>
+
+<% cookies[:back] = request.referer %>
+<%= link_to back, receipts_path %>
+
+<center>
+<%= printicon %> :: 
+<%= link_to printr, printred_receipt_path(@receipt) %>
+<%= link_to printb, printblue_receipt_path(@receipt) %>
+<%= link_to printw, printwhite_receipt_path(@receipt) %>
+</center>
+

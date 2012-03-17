@@ -1,0 +1,294 @@
+class ReceiptsController < ApplicationController 
+  
+  helper_method :run_docnumber, :sort_column, :sort_direction
+  # GET /receipts
+  # GET /receipts.xml
+  def index
+#     @receipts = Receipt.all
+#     @receipts = Receipt.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+     
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @receipts }
+      format.json  { render :json => @receipts }
+    end
+  end
+
+  # GET /receipts/1
+  # GET /receipts/1.xml
+  def show
+    @receipt = Receipt.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @receipt }
+    end
+  end
+
+  # GET /receipt/new
+  # GET /receipt/new.xml
+  def new
+    @receipt = Receipt.new
+    run_docnumber
+    default_cancel
+    @receipt.tax = false
+    @receipt.detail=nil
+    @receipt.complete = false
+    cookies[:back_doc] = 'receipt'
+    respond_to do |format|
+      format.html # new.html.erb
+      format.xml  { render :xml => @receipt }
+    end
+  end
+
+  # GET /receipts/1/edit
+  def edit
+    @receipt = Receipt.find(params[:id])
+  end
+
+  # POST /receipts
+  # POST /receipts.xml
+  def create
+    @receipt = Receipt.new(params[:receipt])
+    run_docnumber
+    default_cancel
+    @receipt.detail=nil
+    @receipt.complete = false
+    respond_to do |format|
+      if @receipt.save
+	if @receipt.doc_date==Date.today
+	  @receipt.destroy
+	  format.html { render :action => "new"}
+	else
+	  format.html { redirect_to(manageitem_receipt_path(@receipt), :notice => 'receipt was successfully created.') }
+	  format.xml  { render :xml => @receipt, :status => :created, :location => @receipt }
+	end
+      else
+        format.html { render :action => "new" }
+        format.xml  { render :xml => @receipt.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /receipts/1
+  # PUT /receipts/1.xml
+  def update
+    @receipt = Receipt.find(params[:id])
+
+    respond_to do |format|
+      if @receipt.update_attributes(params[:receipt])
+        format.html { #   CANCLE 
+		      if @receipt.cancel == true || @receipt.complete == true
+			redirect_to(@receipt, :notice => 'receipt\'s data was successfully updated.') 
+		      else
+		      redirect_to(manageitem_receipt_path(@receipt), :notice => 'receipt\'s data was successfully updated.') 
+		      end
+		    }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @receipt.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /receipts/1
+  # DELETE /receipts/1.xml
+  def destroy
+    @receipt = Receipt.find(params[:id])
+    @receipt.destroy
+
+    respond_to do |format|
+      format.html { redirect_to(receipts_url) }
+      format.xml  { head :ok }
+    end
+  end
+  
+  def manageitem
+    @receipt = Receipt.find(params[:id])
+  end
+  
+  def printblue
+    @company = Company.first
+    @receipt = Receipt.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def printred
+    @company = Company.first
+    @receipt = Receipt.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def printwhite
+    @company = Company.first
+    @receipt = Receipt.find(params[:id])
+    render :layout => 'print'
+  end
+  
+  def rwait
+#     @receipts = Receipt.all
+#     @receipts = Receipt.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => false ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+     
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @receipts }
+      format.json  { render :json => @receipts }
+    end
+  end
+  
+  def rcomplete
+#     @receipts = Receipt.all
+#     @receipts = Receipt.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    
+    if (params[:col] == '1')
+      if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	 @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'asc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+      else if (params[:sort] == 'custname' && params[:direction]=='desc')
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order('custname' + ' ' + 'desc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  else
+	     @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  end
+      end
+#       @receipts = Receipt.joins(:customer).searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+    else if (params[:col] == '2')
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'asc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	  else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order('custname' + ' ' + 'desc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	       else
+		  @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	       end
+	  end
+      
+# 	    @receipts = Receipt.joins(:customer).searchtitle(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 else
+	    if (params[:sort] == 'custname' && params[:direction]=='asc') 
+	      @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'asc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+	    else if (params[:sort] == 'custname' && params[:direction]=='desc')
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order('custname' + ' ' + 'desc').where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+		 else
+		    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).where(:complete => true ,:cancel => false).paginate(:per_page => 15, :page => params[:page])
+		 end
+	    end
+# 	    @receipts = Receipt.joins(:customer).search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 15, :page => params[:page])
+	 end
+    end
+     
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @receipts }
+      format.json  { render :json => @receipts }
+    end
+  end
+  
+  private
+  
+  def run_docnumber
+    y=(Time.now.year+543).to_s.split("25").last
+      if Receipt.find(:all).empty?
+	@receipt.doc_number = y+'0001'
+      else if y != Receipt.last.doc_number[0..1]
+	      @receipt.doc_number = y+'0001'
+	   else
+	      i = Receipt.last.doc_number
+	      n = i[2..5].to_i+1 
+	      if n<10 
+		@receipt.doc_number = y+'000'+n.to_s 
+	      else if n<100
+		    @receipt.doc_number = y+'00'+n.to_s 
+		   else if n<1000 
+			  @receipt.doc_number = y+'0'+n.to_s 
+			else if n<=9999
+			       @receipt.doc_number = y+n.to_s 
+			     else 
+			       @receipt.doc_number = 'Do not create receipt !!!' 
+			     end  
+		        end
+		   end
+	      end 
+	    end
+       end 
+  end
+  
+  def default_cancel
+    @receipt.cancel = false
+  end
+
+  def sort_column
+    Receipt.column_names.include?(params[:sort]) ? params[:sort] : "updated_at"
+  end
+  
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
+  end
+  
+end

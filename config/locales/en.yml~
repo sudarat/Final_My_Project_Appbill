@@ -1,0 +1,43 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+  hello: "Hello world"
+
+  activerecord:
+    attributes:
+      company:
+        compname: "ชื่อบริษัท : "
+        compaddress: "ที่อยู่ : "
+        compsub_district: "ตำบล : "
+        compdistrict: "อำเภอ : "
+        province: "จังหวัด : "
+        comptel: "เบอร์โทรศัพท์ : "
+        compfax: "เบอร์โทรสาร : "
+        comptax: "เลขประจำตัวผู้เสียภาษี : "
+        compauthor_name: "ชื่อผู้มีอำนาจอนุมัติ : "
+        compauthor_tel: "เบอโทรศัพท์ : "
+      customer:
+        custname: "ชื่อลูกค้า : "
+        custaddress: "ที่อยู่ : "
+        custtel: "เบอร์โทรศัพท์ : "
+        custsub_district: "ตำบล : "
+        custdistrict: "อำเภอ : "
+        province: "จังหวัด : "
+        custcontact_name: "ชื่อผู้ติดต่อ : "
+        custcontact_tel: "เบอร์โทรศัพท์ผู้ติดต่อ : "
+        custcontact_email: "อีเมล์ : "
+      document:
+        doc_number: "เลขที่ : "
+        title: "ชื่องาน : "
+        detail: "รายละเอียด : "
+        terms: "ระยะเวลาดำเนินการ : "
+        doc_date: "วันสิ้นสุดการใช้เอกสาร : "
+        approve: "การตอบรับ"
+        complete: "Complete"
+        customer: "ลูกค้า : "
+        cancel: "Cancel"
+
+
+
+

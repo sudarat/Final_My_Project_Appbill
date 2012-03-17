@@ -1,0 +1,38 @@
+<%= semantic_form_for (@customer) do |f| %>
+  <% if @customer.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@customer.errors.count, "error") %> prohibited this customer from being saved:</h2>
+      <br />
+      <ul> 
+      <% @customer.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <% cookies[:back] = request.referer %>
+<!--     <%= link_to "back", cookies[:back] %> -->
+  <% end %>
+  
+  <br />
+  <%= f.inputs do %>
+    <%= f.input :custname, :label => 'ชื่อลูกค้า '  ,:hint => 'Ex. บริษัท เมืองเอก จำกัด'%>
+    <%= f.input :custaddress, :label => 'ที่อยู่ ',	:input_html => { :rows => 5 } ,:hint => 'Ex. 79/1 หมู่บ้านสันติสุข ซอยประชาชื่น '%>
+    <%= f.input :custstreet , :label => 'ถนน ',:hint => 'Ex. สุขุมวิท'%>
+    <%= f.input :custsub_district , :label => 'ตำบล ',:hint => 'Ex. สนามจันทร์'%>
+    <%= f.input :custdistrict  , :label => 'อำเภอ ',:hint => 'Ex. เมือง'%>
+    <%= f.input :province , :label => 'จังหวัด ', :as => :select , :member_label => :province_name , :include_blank => 'Change Province' %> 
+    <%= f.input :custtel , :label => 'เบอร์โทรศัพท์ ' ,:hint => 'Ex. 02-9310022,084-7797784'%>
+    
+    <%= f.input :custfax , :label => 'เบอร์โทรสาร ', :as => :string ,:hint => 'Ex. 02-9310022'%>
+    <%= f.input :custcontact_name , :label => 'ชื่อผู้ติดต่อ ' ,:hint => 'Ex. นายลูกค้า คนสำคัญ'%>
+    <%= f.input :custcontact_tel , :label => 'เบอร์โทรศัพท์ผู้ติดต่อ '  ,:hint => 'Ex. 02-9310022,084-7797784'%>
+    <%= f.input :custcontact_email, :label => 'อีเมล์ ', :as => :string   ,:hint => 'Ex. mail@mail.com'%>
+  <% end %>
+
+  <%= f.buttons do %>
+    <%= f.commit_button %>
+  <% end %>
+<% end %>
+
+

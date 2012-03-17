@@ -1,0 +1,55 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @document.title %>
+</p>
+
+<p>
+  <b>Detail:</b>
+  <%= @document.detail %>
+</p>
+
+<p>
+  <b>Terms:</b>
+  <%= @document.terms %>
+</p>
+
+<p>
+  <b>Condition:</b>
+  <%= @document.condition %>
+</p>
+
+<p>
+  <b>Doc date:</b>
+  <%= @document.doc_date.strftime("%Y-%m-%d") %>
+</p>
+
+<p>
+  <b>Doc number:</b>
+  <%= @document.doc_number %>
+</p>
+
+<p>
+  <b>Approve:</b>
+  <%= @document.approve %>
+</p>
+
+<p>
+  <b>Complete:</b>
+  <%= @document.complete %>
+</p>
+
+<p>
+  <b>Customer:</b>
+  <%= @document.customer %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @document.type %>
+</p>
+
+
+<!-- <%= link_to edit, edit_document_path(@document) %> | -->
+<%= link_to back, documents_path %>

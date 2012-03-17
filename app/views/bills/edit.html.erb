@@ -1,0 +1,17 @@
+<% if @bill.cancel || @bill.approve %>
+  <% flash[:notice] = "ไม่สามารถแก้ไขข้อมูลได้ เนื่องจากใบเสร็จรับเงินนี้ได้ส่งให้แล้ว หรืออาจยกเลิก" %>
+
+  <% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+  <% end %>
+
+  <% flash.delete(:notice) %>
+<% else %>
+
+<h1>แก้ไขใบเสร็จรับเงิน</h1>
+
+<%= render 'form' %>
+
+<%= link_to show, @bill %>
+<%= link_to back, request.referer %>
+<% end%>

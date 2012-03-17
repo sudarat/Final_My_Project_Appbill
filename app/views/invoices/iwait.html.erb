@@ -1,0 +1,196 @@
+
+<table>
+  <tr>
+    <td><h1>รายการใบส่งของ</h1><hr>
+      <%= link_to new_q, new_quotation_path %>
+      <%= link_to allm, invoices_path %><%= link_to waitm, invoices_iwait_path %><%= link_to notcompletem, invoices_inotcomplete_path %><%= link_to completem, invoices_icomplete_path %>
+    </td>
+    <td>
+      <%= form_tag invoices_iwait_path, :method => 'get', :id => "invoices_search" do %>
+	<p align=right>
+	  <b>ค้นหาจาก :: </b><%= select_tag(:col, options_for_select([['ลูกค้า', 1], ['ชื่องาน', 2]], params[:col] )) %><br/>
+	  <%= text_field_tag :search, params[:search], :size => 10%>
+	  <%= submit_tag "ค้นหา", :name => nil %>
+	</p>
+	<div id="invoices"><%= render 'invoices/invoices' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= will_paginate @invoices,:class=>"right" %>
+<% if (request.url)["custname"] != nil %>
+<table><%else%><table class="pretty"><% end %>
+
+  <tr style="index">
+    <th width="10px"><center><%= sortable "doc_number","เลขที่" %></th>
+
+    <% if (request.url)["search"] == nil%>
+      <% if (request.url)=='http://localhost:3000/invoices/iwait' || ( (request.url)["direction=asc&sort=custname"] == nil && (request.url)["search"] == nil )  %>
+	<th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/invoices/iwait?direction=asc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=desc&sort=custname' %> <%= image_tag "down_arrow.gif" %><% end %></th>
+      <% else %><th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/invoices/iwait?direction=desc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=asc&sort=custname' %> <%= image_tag "up_arrow.gif" %><% end %></th>
+      <% end %>
+    <% else %>
+      <% @se = params[:search] %><% @di = params[:direction] %><% @so = params[:sort] %><% @col = params[:col]%>
+      <% if @di !='asc' && @di != 'desc' %><% cookies[:linkcust] = 'http://localhost:3000/invoices/iwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+	<th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+	<% cookies.delete :linkcust %></th>
+      <% else %><% if (request.url)["custname"] == nil %><% cookies[:linkcust] = 'http://localhost:3000/invoices/iwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		  <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		  <% cookies.delete :linkcust %></th>
+		  <% else %>
+		    <% if @di =='asc' %><% cookies[:linkcust] = 'http://localhost:3000/invoices/iwait?&search='+@se+'&direction=desc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "up_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% else %><% cookies[:linkcust] = 'http://localhost:3000/invoices/iwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% end %>
+		  <% end %>
+		<% end %>
+    <% end %>
+    <th width="345px"><center><%= sortable "title" , "ชื่องาน" %></th>
+    <th width="170px"><center><%= sortable "doc_date" ,"กำหนดการจ่ายเงิน"%></th>
+    <th width="75px"><center><%= sortable "approve" , "สถานะจ่ายเงิน" %></th>
+    <th width="10px"><center><%= sortable "complete", "เสร็จสมบูรณ์" %></th>    
+    <th width="10px"><center><%= sortable "cancel","ใช้งาน" %></th>
+    <th width="100px"><center><%= sortable "updated_at","แก้ไขล่าสุด" %></th>
+    <th width="100px"></th>
+  </tr>
+
+<% @invoices.each do |invoice| %>
+
+  <% if (invoice.approve==true&&invoice.complete==false&&invoice.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==invoice.doc_date.strftime("%Y-%m-%d"))&&invoice.cancel==false&&invoice.approve != true) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==invoice.doc_date.strftime("%Y-%m-%d"))&&invoice.cancel==false&&invoice.approve != true) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==invoice.doc_date.strftime("%Y-%m-%d"))&&invoice.cancel==false&&invoice.approve==false) || (Date.today.year>invoice.doc_date.year&&(invoice.approve==nil||invoice.approve==false) && invoice.cancel==false)  || (Date.today.year==invoice.doc_date.year && Date.today.month>invoice.doc_date.month&&(invoice.approve==nil||invoice.approve==false) && invoice.cancel==false) || (Date.today.year==invoice.doc_date.year && Date.today.month==invoice.doc_date.month && Date.today.day>=invoice.doc_date.day&&(invoice.approve==nil||invoice.approve==false) && invoice.cancel==false)%>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">I<%= invoice.doc_number[0..1] %>/<%= invoice.doc_number[2..5] %></td>
+
+      <td class="bordertop  bold"><center>
+	<% if invoice.customer.custname.length <= 15 %>
+	  <%= link_to invoice.customer.custname , customer_path(invoice.customer_id)%>
+	<% else %>
+	  <%= link_to invoice.customer.custname[0..15]+'...', customer_path(invoice.customer_id) %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop  bold">
+	<% if invoice.title.length <= 32 %>
+	  <%= invoice.title %>
+	<% else %>
+	  <%= invoice.title[0..31]+'...' %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop  bold"><center>
+	<% if invoice.approve != true %>
+	  <font color=red><%= invoice.doc_date.strftime("%Y-%m-%d") %></font>
+	<% else %>
+	  <%= invoice.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      </td>
+
+      <td class="bordertop"><center>
+	<% if invoice.approve %><%= paid %>
+	<%else%><%= notpaid %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop  bold"><center>
+	<% if invoice.approve %>
+		<% if invoice.complete == nil || invoice.complete == false %>
+			<%= nonecomplete %>
+		<% else %>
+			<%= complete %>
+		<% end %>
+	<% else %>
+		<%= notspecified   %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop  bold"><center><% if invoice.cancel%> <%= cancel %><%else%><%= ready %><% end %></td>
+
+      <td class="bordertop  bold"><center><%= invoice.updated_at.strftime("%Y-%m-%d") %></center></td>
+
+      <td align="right" class="bordertop  bold">
+         <% if invoice.cancel || invoice.approve %>
+	  <%= edit_non%>
+	 <% else %><%= link_to edit, edit_invoice_path(invoice)  %>
+	 <% end %>
+
+	 <%= link_to show, invoice  %>
+	 <% if invoice.approve == true && invoice.cancel == false && invoice.complete == false %>
+	  <%= link_to nextt,changedoc_invoice_path(invoice) %></td>
+	 <% else %>
+	  <%= nextt_non %></td>
+	 <% end %>
+    </td>
+  </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">I<%= invoice.doc_number[0..1] %>/<%= invoice.doc_number[2..5] %></td>
+
+      <td class="bordertop nobold"><center>
+	<% if invoice.customer.custname.length <= 15 %>
+	  <%= link_to invoice.customer.custname , customer_path(invoice.customer_id)%>
+	<% else %>
+	  <%= link_to invoice.customer.custname[0..15]+'...', customer_path(invoice.customer_id) %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop nobold">
+	<% if invoice.title.length <= 32 %>
+	  <%= invoice.title %>
+	<% else %>
+	  <%= invoice.title[0..31]+'...' %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+      	  <%= invoice.doc_date.strftime("%Y-%m-%d") %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if invoice.approve %><%= paid %>
+	<%else%><%= notpaid %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop nobold"><center>
+	<% if invoice.approve %>
+		<% if invoice.complete == nil || invoice.complete == false %>
+			<%= nonecomplete %>
+		<% else %>
+			<%= complete %>
+		<% end %>
+	<% else %>
+		<%= notspecified   %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop nobold"><center><% if invoice.cancel%> <%= cancel %><%else%><%= ready %><% end %></td>
+
+      <td class="bordertop nobold"><center><%= invoice.updated_at.strftime("%Y-%m-%d") %></center></td>
+
+      <td align="right" class="bordertop">
+         <% if invoice.cancel || invoice.approve %>
+	  <%= edit_non%>
+	 <% else %><%= link_to edit, edit_invoice_path(invoice)  %>
+	 <% end %>
+
+	 <%= link_to show, invoice  %>
+	 <% if invoice.approve == true && invoice.cancel == false && invoice.complete == false %>
+	  <%= link_to nextt,changedoc_invoice_path(invoice) %></td>
+	 <% else %>
+	  <%= nextt_non %></td>
+	 <% end %>
+    </td>
+  </tr>
+  <% end %>
+<% end %>
+</table>
+
+<br /><center>
+<!-- <%= will_paginate @invoices %> -->
+<!-- <%= link_to 'New Document', new_invoice_path %> -->
+<% cookies[:newq] = request.url %>

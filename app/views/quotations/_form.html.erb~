@@ -1,0 +1,121 @@
+<script type="text/javascript">
+  bkLib.onDomLoaded(nicEditors.allTextAreas);
+</script >
+
+
+
+<%= semantic_form_for(@quotation, :html => { :multipart => true }) do |f| %>
+
+  
+
+  <% if @quotation.doc_date==Date.today %>
+    <% if @quotation.errors.any? %>
+      <div id="error_explanation">
+	<h2><%= pluralize((@quotation.errors.count)+1, "error") %> prohibited this document from being saved:</h2>
+	<br />
+	<ul>
+	<% @quotation.errors.full_messages.each do |msg| %>
+	  <li><%= msg %></li>
+	<% end %>
+	  <li><%= "Due date can't be today" %></li>
+	</ul>
+      </div>
+    <% else %>
+      <div id="error_explanation">
+	<h2><%= pluralize("1", "error") %> prohibited this document from being saved:</h2>
+	<br />
+	<ul>
+	  <li><%= "Due date can't be today" %></li>
+	</ul>
+      </div>
+    <% end %>
+  <% else %>
+    <% if @quotation.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@quotation.errors.count, "error") %> prohibited this document from being saved:</h2>
+      <br />
+      <ul>
+      <% @quotation.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+    <% end %>
+  <% end %>
+
+<br /><font color="black" >
+  <%= f.inputs do %>
+    <b><%= "เลขที่" %></b><font style="margin-left : 16em; ">Q<%= @quotation.doc_number[0..1] %>/<%= @quotation.doc_number[2..5] %><br /> </br>
+    <% if request.referer != 'http://localhost:3000/' %>
+    <% if request.referer.split('http://localhost:3000/').second.split('/').first == 'customers' && request.referer != 'http://localhost:3000/customers' && request.referer != 'http://localhost:3000/customers/new'%>
+      <% @customer=Customer.last %>
+      <% @quotation.customer_id = @customer.id %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer , :selected => @customer.id  %><% cookies.delete :back_doc %>
+    <% else %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer %>
+    <% end %>
+    <% else %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer %>
+    <% end %>
+
+     
+    <%= f.input :title , :label => "ชื่องาน " ,:hint => 'กรอกชื่องาน เช่น ออกแบบและตกแต่งห้องประชุม ' %>
+    <% if @quotation.detail == nil || @quotation.detail != "<br>" %>
+        <%= f.input :detail , :label => "รายละเอียด *",	:input_html => { :rows => 5} ,:hint => 'กรอกรายละเอียดย่อ '%>
+    <% else %>
+      <%= f.input :detail , :label => "รายละเอียด ",	:input_html => { :rows => 5 },:hint => 'กรอกรายละเอียดย่อ '%>
+    <% end %>
+    <%= f.input :terms , :label => "ระยะเวลาดำเนินการ(วัน) ",	:as => :string ,:input_html => { :size => "20" },:hint => 'ระยะเวลาดำเนินการนับจากวันอนุมัติ เช่น 20 วัน' %>
+    <%= f.input :condition  , :label => "เงื่อนไขการรับประกัน", :cols=>"80", :rows=>"10" ,	:input_html => { :rows => 5 } ,:hint => 'เงื่อนไขการรับประกัน '%>
+    <%if @quotation.doc_date==nil || @quotation.doc_date <= Date.today %>
+      <li id="invoice_doc_date_input" class="string input error required stringish">
+	<%= f.label :doc_date,'วันสิ้นสุดการเสนอราคา *' %><% CalendarDateSelect.format=(:hyphen_ampm)%><%= f.calendar_date_select  :doc_date ,:style=>"margin-left : 7em;" , :year_range => [0.years.ago, 10.years.from_now]%>
+	
+	<% if @quotation.doc_date==nil %>
+	  <br><font color="#c50000" style="margin-left : 19em;">please fill in the blank</font>
+	<% else if @quotation.doc_date==Date.today %>
+		  <br><font color="#c50000" style="margin-left : 19em;">can't today</font>
+		<% else %>
+		  <br><font color="#c50000" style="margin-left : 19em;">over time ago</font>
+		<% end %>
+	<% end %>
+	<br /><font color=gray style="margin-left : 29.3em; font-size: 7pt;"><big>คลิกที่รูปปฏิทินเพื่อกำหนดวันสุดท้ายของการเสนอราคา</big></font>
+      </li>
+    <% else %>
+	<%= f.label :doc_date,'วันสิ้นสุดการเสนอราคา *' %><% CalendarDateSelect.format=(:hyphen_ampm)%><%= f.calendar_date_select  :doc_date ,:style=>"margin-left : 7em;" , :year_range => [0.years.ago, 10.years.from_now]%>
+	<br /><font color=gray style="margin-left : 29.3em; font-size: 7pt;"><big>คลิกที่รูปปฏิทินเพื่อกำหนดวันสุดท้ายของการเสนอราคา</big></font><br /><br />
+    <% end %>
+    <font style="font-size : 0.85em;"><%= f.input :tax, :as => :radio, :label => "อัตราภาษี", :collection => {"ภาษี 7%" => true, "ไม่คิดภาษี" =>  false} %></font>
+<!--    <%= f.check_box :approve %> อนุมัติ -->
+<!-- ตรวจดูรายการสินค้า ถ้าออกใบส่งของแล้วทุกรายการ ให้ complete เป็น true -->
+    <% f.input :complete %>
+<!--    <% f.check_box :complete %> -->
+
+<!--  CANCLE -->
+    <% if (request.url)["new"] != nil || (request.url) == "http://localhost:3000/quotations" %>
+      <!--<%= f.input :approve, :label => "Approve",  :as => :select,   
+		:collection => { "Approve" => true, "Reject" => false } , :include_blank => "Waiting.." ,:input_html => { :disabled => true }%>
+      <font size="2.5"><%= f.input :cancel, :as => :radio, :label => "Status", :collection => {"Ready" => false, "Cancel" => true}, :default => false ,:input_html => { :disabled => true }%></font>-->
+    <% else %>
+      <%= f.input :approve, :label => "ผลอนุมัติ",  :as => :select,   
+		:collection => { "อนุมัติ" => true, "ไม่อนุมัติ" => false } , :include_blank => "รอผล.." %>
+      <font style="font-size : 0.85em;"><%= f.input :cancel, :as => :radio, :label => "สถานะ", :collection => {"ใช้งาน" => false, "ยกเลิก" => true}, :default => false %></font>
+      
+    <% end %>
+   
+<!-- เอกสารเพิ่มเติม -->
+     
+    <%= f.input :paper , :label => "เอกสารเพิ่มเติม ",:hint => paper_show %>
+  <% end %>
+  <%= f.buttons %>
+<% end %>
+<%  %>
+<% if request.referer != 'http://localhost:3000/' %>
+    <% if request.referer.split('http://localhost:3000/').second.split('/').first == 'customers' && request.referer != 'http://localhost:3000/customers' && request.referer != 'http://localhost:3000/customers/new'%>
+      <% cookies.delete :back_doc %>
+    <% else %>
+   
+    <% end %>
+    <% else %>
+   
+    <% end %>

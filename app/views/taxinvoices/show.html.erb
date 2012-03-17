@@ -1,0 +1,80 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>ใบกำกับภาษี</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>เลขที่ : </b></td>
+      <td>T<%= @taxinvoice.doc_number[0..1] %>/<%= @taxinvoice.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ลูกค้า : </b></td>
+      <td><%= @taxinvoice.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ชื่องาน : </b></td>
+      <td><%= @taxinvoice.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @taxinvoice.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>สถานะการส่ง : </b></td>
+      <td>
+	    <% if @taxinvoice.complete  %>
+	      <font color=green ><%= 'ส่งเอกสารให้ลูกค้าเรียบร้อย' %></font>
+	    <% else %>
+	      <font color=red><%= 'ยังไม่ส่งเอกสารให้ลูกค้า' %></font>
+	    <% end %>
+	  
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>สถานะ : </b></td>
+      <td><% if @taxinvoice.cancel  %>
+	    <%= 'ยกเลิก'%><% @taxinvoice.cancel %>
+	  <% else %><%= 'ใช้งาน' %><% @taxinvoice.cancel %>
+	  <% end %>
+	  <% @taxinvoice.cancel %>
+      </td>
+    </p>
+  </tr>
+</font>
+</table>
+
+<!-- ######################################################### -->
+<!-- รายการ -->
+
+<%= render :partial => "items/itemtaxinvoice"%>
+<!-- ######################################################### -->
+
+<% if @taxinvoice.cancel || @taxinvoice.complete %> <td><%= edit_non %></td>
+<% else %><td><%= link_to edit, edit_taxinvoice_path(@taxinvoice) %></td>
+<% end %>
+<%= link_to back, taxinvoices_path %>
+
+<center>
+<%= printicon %> :: 
+<%= link_to printr, printred_taxinvoice_path(@taxinvoice) %>
+<%= link_to printb, printblue_taxinvoice_path(@taxinvoice) %>
+<%= link_to printw, printwhite_taxinvoice_path(@taxinvoice) %>
+</center>

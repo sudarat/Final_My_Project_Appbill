@@ -1,0 +1,66 @@
+h2 {
+ color: black;
+}
+
+table.tdesc{
+border-collapse:collapse; 
+empty-cells:hide;
+}
+
+td.tdesc{
+border-collapse:collapse; 
+empty-cells:hide;
+}
+
+tr.tdesc{
+border-collapse:collapse; 
+empty-cells:hide;
+}
+
+.bgdescquo {
+ background: url('/images/print/blue.gif') repeat;
+}
+
+.bgdescgra {
+ background: url('/images/print/gray.gif') repeat;
+}
+
+
+.bgdescinv {
+ background: url('/images/print/red.gif') repeat;
+}
+
+.bordertop {
+  border-top: 1px solid black; 
+}
+
+.borderright {
+  border-right: 1px solid black;
+}
+
+
+.borderleft {
+  border-left: 1px solid black;
+}
+
+.borderbottom {
+  border-bottom: 1px solid black;
+}
+
+.borderdetail {
+  border-top: 1px solid black; 
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+}
+
+.foot {
+  background: url('/images/foot.jpg') repeat;
+  
+}
+
+.hp {
+ font-size: 13.9px;
+ line-height: 29.5px;
+/*  color:#FFFFCC; */
+}

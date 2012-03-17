@@ -1,0 +1,32 @@
+<% if @invoice.cancel || @invoice.approve %>
+  <% flash[:notice] = "This invoice is not edit !! B. Cancle or Paid." %>
+  <% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+  <% end %>
+  <% flash.delete(:notice) %>
+<% else %>
+  <% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+  <% end %>
+
+
+<h1>แก้ไขข้อมูลใบส่งของ</h1></br>
+
+<!--<%= semantic_form_for(@invoice) do |f| %>
+	<%= f.inputs do %>		
+		<%= f.input :doc_number ,:input_html => { :disabled => true } %>
+		<%= f.input :customer , :as => :select , :member_label => :custname  ,:input_html => { :disabled => true } %>
+		<%= f.input :title ,:input_html => { :disabled => true } %>		  		
+	<% end %>
+<% end %>-->
+
+
+<%= render 'form' %>
+
+
+<% @quotation.complete %> 
+<br />
+<!-- <%= link_to 'Show', @invoice %> | -->
+<% cookies[:back] = request.referer %>
+<%= link_to back, request.referer %>
+ <% end %>

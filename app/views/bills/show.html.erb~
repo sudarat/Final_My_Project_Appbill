@@ -1,0 +1,118 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>ใบเสร็จรับเงิน</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>เลขที่ : </b></td>
+      <td>B<%= @bill.doc_number[0..1] %>/<%= @bill.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ลูกค้า : </b></td>
+      <td><%= @bill.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ชื่องาน : </b></td>
+      <td><%= @bill.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @bill.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>สถานะการส่ง : </b></td>
+      <td><% if @bill.approve  %>
+	      <font color=green ><%= 'ส่งใบเสร็จรับเงินให้ลูกค้าเรียบร้อย' %></font>
+	  <% else %><font color=red ><%= 'ยังไม่ส่งใบเสร็จรับเงินให้ลูกค้า' %></font>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>เอกสารถัดไป : </b></td>
+      <td><% if @bill.approve  %>
+	    <% if @bill.complete  %>
+	      <font color=green ><%= 'ออกใบกำกับภาษีเรียบร้อย' %></font><br>
+	       <% @taxinvoice_number =  'T'+ @taxinvoice.last.doc_number[0..1]+'/'+@taxinvoice.last.doc_number[2..5] %>
+	      <%= link_to @taxinvoice.last.id,taxinvoice_path(@taxinvoice.last) %>
+	    <% else %>
+	      <font color=red><%= 'ยังไม่ออกใบกำกับภาษี' %></font>
+	    <% end %>
+	  <% else %>-
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+
+  <% if @bill.cancel == false && @bill.complete == false && @bill.approve == true %>
+ <tr>
+   <td></td>
+    <td>
+
+<!-- เช็คถ้ามีรายการที่ยังไม่ได้ออกใบส่งของ ให้แสดง link -->
+	<% if @bill.approve && @bill.complete == false %>
+	  <%= link_to nextb, nextdoc_bill_path(@bill) %>
+	<% end %>
+    </td>
+  </tr>
+  <%end%>
+  <tr>
+    <p>
+      <td><b>สถานะ : </b></td>
+      <td><% if @bill.cancel  %>
+	    <%= 'ยกเลิก'%><% @bill.cancel %>
+	  <% else %><%= 'ใช้งาน' %><% @bill.cancel %>
+	  <% end %>
+	  <% @bill.cancel %>
+      </td>
+    </p>
+  </tr>
+</font>
+</table>
+
+<!-- ######################################################### -->
+   
+<!-- ######################################################### -->
+<!-- รายการ -->
+
+
+<!-- เพิ่มรายการ -->
+<%= render :partial => "items/itembill"%>
+<!-- ######################################################### -->
+
+
+<!--  link_to "ออกใบเสร็จรับเงิน",nextdoc_bill_path(@bill) %> -->
+
+
+
+<!-- ######################################################### -->
+
+<% if @bill.cancel || @bill.approve %> <td><%= edit_non %></td>
+<% else %><td><%= link_to edit, edit_bill_path(@bill) %></td>
+<% end %>
+
+<%= link_to back, bills_path %>
+
+<center>
+<%= printicon %> :: 
+<%= link_to printr, printred_bill_path(@bill) %>
+<%= link_to printb, printblue_bill_path(@bill) %>
+<%= link_to printw, printwhite_bill_path(@bill) %>
+</center>

@@ -1,0 +1,101 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+<% cookies[:backnewcust] %>
+<h1 class="center">ข้อมูลลูกค้า</h1>
+<% @customer.company.compname %>
+<table class="show_company show_company2"> 
+  <tr ><td colspan=2 class="borderdetail"><b><font size=4 color=#fff>ข้อมูลลูกค้า</font></b></td></tr>
+
+  <tr><p>
+<!--       <td width=50px></td> -->
+      <td width=200px class="borderdetail"><b>ชื่อลูกค้า : </b></td>
+      <td class="borderdetail"><%= @customer.custname %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>ที่อยู่ : </b></td>
+      <td class="borderdetail"><%= @customer.custaddress %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>ถนน : </b></td>
+      <td class="borderdetail"><% if @customer.custstreet.length != 0 %>
+				<%= @customer.custstreet %>
+			        <% else %> -
+			       <% end %></td>
+  </p></tr>
+<% if @customer.province.province_name != 'กรุงเทพมหานคร'%>
+  <tr><p>
+      <td class="borderdetail"><b>ตำบล : </b></td>
+      <td class="borderdetail"><%= @customer.custsub_district %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>อำเภอ : </b></td>
+      <td class="borderdetail"><%= @customer.custdistrict %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>จังหวัด : </b></td>
+      <td class="borderdetail"><%= @customer.province.province_name %></td>
+  </p></tr>
+<% else %>
+  <tr><p>
+      <td class="borderdetail"><b>แขวง : </b></td>
+      <td class="borderdetail"><%= @customer.custsub_district %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เขต : </b></td>
+      <td class="borderdetail"><%= @customer.custdistrict %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>จังหวัด : </b></td>
+      <td class="borderdetail"><%= @customer.province.province_name %></td>
+  </p></tr>
+<% end %>
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรศัพท์ : </b></td>
+      <td class="borderdetail"><%= @customer.custtel %></td>
+  </p></tr>
+  
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรสาร : </b></td>
+      <td class="borderdetail"><% if @customer.custfax.length == 0 %>
+				  -
+				  <% else %><%= @customer.custfax %>
+			       <% end %></td>
+  </p></tr>
+</table>
+
+<table class="show_company show_company2"> 
+  <tr ><td colspan=2 class="borderdetail"><b><font size=4 color=#fff>ข้อมูลผู้ติดต่อ</font></b></td></tr>
+  <tr><p>
+<!--       <td width=50px></td> -->
+      <td width=200px class="borderdetail"><b>ชื่อผู้ติดต่อ : </b></td>
+      <td class="borderdetail"><%= @customer.custcontact_name %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรศัพท์ : </b></td>
+      <td class="borderdetail"><%= @customer.custcontact_tel %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>อีเมล์ : </b></td>
+      <td class="borderdetail"><% if @customer.custcontact_email.length == 0 %>
+				  -
+				  <% else %><%= @customer.custcontact_email %>
+			       <% end %></td>
+  </p></tr>
+</table>
+<%= cookies[:back_doc]%>
+
+
+<% if cookies[:back_doc] == 'quotation' %>
+  <%= button_to 'ออกใบเสนอราคาต่อ',new_quotation_path ,:method => :get ,:class=>"center"%>
+<% else if cookies[:back_doc] == 'receipt'%>
+  <%= button_to 'ออกใบสำคัญรับเงินต่อ',new_receipt_path ,:method => :get ,:class=>"center"%>
+	<% end %>
+<% end %>
+
+
+<%= link_to edit, edit_customer_path(@customer) ,:class=>"right"%>
+<%= link_to back, request.referer %>
+
+
+<% cookies[:editcust] = request.url %>

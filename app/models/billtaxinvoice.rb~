@@ -1,0 +1,108 @@
+class Billtaxinvoice < Document
+  
+  has_many :items
+   
+  validates_presence_of :doc_number, :customer, :title
+  
+  scope :customer, joins(:customer).order("custname asc") # Just reference :comments
+  scope :customerd, joins(:customer).order("custname desc") # Just reference :comments
+  
+  def details_html
+    html = ""
+    
+    items.each do |detail|
+	html += "<tr valign=middle height=25>
+		  <td class=bordertop borderright><font size=2>#{detail.description}</font></td> 
+		  <td align= right  class=borderdetail><font size=2>#{detail.quantity}</font></td> 
+		  <td align= right class=borderdetail><font size=2><img src=/images/print/b.jpg , align=left>#{detail.unit_price}</font></td> 
+		  <td align= right class=bordertop borderleft><font size=2><img src=/images/print/b.jpg , align=left>#{detail.unit_price*detail.quantity}</font></td>
+		 </tr>"
+    end
+    
+    return html
+  end
+  
+   def subtotal_html
+    subtotal = 0
+    
+    items.each do |detail|
+	subtotal += detail.unit_price*detail.quantity
+    end
+    
+    return subtotal.round(2)
+  end
+  
+  def tax_html
+    tax = 0
+    
+    items.each do |detail|
+	tax += detail.unit_price*detail.quantity
+    end
+    
+    tax = (tax * 7)/100
+    
+    return tax.round(2)
+  end
+  
+  def wtax_html
+    wtax = 0
+    
+    items.each do |detail|
+	wtax += detail.unit_price*detail.quantity
+    end
+    
+    wtax = (wtax * 3)/100
+    
+    return wtax.round(2)
+  end
+  
+  def total_html
+    total = 0
+    
+    items.each do |item|
+	total += item.unit_price*item.quantity
+    end
+    
+    total = (total + ((total * 7)/100))-((total * 3)/100)
+    
+    return total.round(2)
+  end
+  
+  def wtotal_html
+    total = 0
+    
+    items.each do |item|
+	total += item.unit_price*item.quantity
+    end
+    
+    total = (total -((total * 3)/100))
+    
+    return total.round(2)
+  end
+  
+  
+  def self.search(search)
+    if search
+      where('title LIKE ?', "%#{search}%")
+    else
+      scoped
+    end
+  end
+  
+  def self.searchtitle(search)
+    if search
+      where('title LIKE ?', "%#{search}%")
+    else
+      scoped
+    end
+  end
+  
+  def self.searchcustname(search)
+    if search
+      where('custname LIKE ?', "%#{search}%")      
+    else
+      scoped
+    end
+  end
+  
+end

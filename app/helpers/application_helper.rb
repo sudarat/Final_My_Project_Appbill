@@ -1,0 +1,98 @@
+module ApplicationHelper
+  
+#   SORT
+  
+  def sortable(column, title = nil)
+    title ||= column.titleize
+    css_class = column == sort_column ? "current #{sort_direction}" : nil
+    direction = column == sort_column && sort_direction == "asc" ? "desc" : "asc"
+    link_to title, params.merge(:sort => column, :direction => direction, :page => nil), {:class => css_class}
+  end
+  
+# HEAD
+  
+  def h_home
+    if request.url== ("http://localhost:3000/") || ((request.url.split("http://localhost:3000").last)[0..2]=='/do')
+      image_tag("/images/head/home2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/home2.jpg';" ,:onmouseout => "this.src='/images/head/home2.jpg';",:class=>"roundl")
+    else
+      image_tag("/images/head/home1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/home2.jpg';" ,:onmouseout => "this.src='/images/head/home1.jpg';",:class=>"roundl")
+    end
+  end 
+
+  def h_alert
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/al'
+      image_tag("/images/head/alert2.gif",:alt => "alert",:onmouseover =>"this.src='/images/head/alert2.gif';" ,:onmouseout => "this.src='/images/head/alert2.gif';")
+    else
+      image_tag("/images/head/alert1.gif",:alt => "alert",:onmouseover =>"this.src='/images/head/alert2.gif';" ,:onmouseout => "this.src='/images/head/alert1.gif';")
+    end
+  end 
+  
+  def h_company
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/co'
+      image_tag("/images/head/company2.jpg",:alt => "company",:onmouseover =>"this.src='/images/head/company2.jpg';" ,:onmouseout => "this.src='/images/head/company2.jpg';")
+    else
+      image_tag("/images/head/company1.jpg",:alt => "company",:onmouseover =>"this.src='/images/head/company2.jpg';" ,:onmouseout => "this.src='/images/head/company1.jpg';")
+    end
+  end  
+   
+  def h_customer
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/cu'
+      image_tag("/images/head/customer2.jpg",:alt => "customer",:onmouseover =>"this.src='/images/head/customer2.jpg';" ,:onmouseout => "this.src='/images/head/customer2.jpg';")
+    else
+      image_tag("/images/head/customer1.jpg",:alt => "customer",:onmouseover =>"this.src='/images/head/customer2.jpg';" ,:onmouseout => "this.src='/images/head/customer1.jpg';")
+    end
+  end  
+
+  def h_quota
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/qu'
+      image_tag("/images/head/quota2.jpg",:alt => "quotation",:onmouseover =>"this.src='/images/head/quota2.jpg';" ,:onmouseout => "this.src='/images/head/quota2.jpg';")
+    else
+      image_tag("/images/head/quota1.jpg",:alt => "quotation",:onmouseover =>"this.src='/images/head/quota2.jpg';" ,:onmouseout => "this.src='/images/head/quota1.jpg';")
+    end
+  end
+  
+  def h_inv
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/in'
+      image_tag("/images/head/inv2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/inv2.jpg';" ,:onmouseout => "this.src='/images/head/inv2.jpg';")
+    else
+      image_tag("/images/head/inv1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/inv2.jpg';" ,:onmouseout => "this.src='/images/head/inv1.jpg';")
+    end
+  end
+   
+  def h_bill
+    if (request.url.split("http://localhost:3000").last)[0..5]=='/bills'
+      image_tag("/images/head/bill2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/bill2.jpg';" ,:onmouseout => "this.src='/images/head/bill2.jpg';")
+    else
+      image_tag("/images/head/bill1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/bill2.jpg';" ,:onmouseout => "this.src='/images/head/bill1.jpg';")
+    end
+  end
+  
+  def h_billtax
+    if (request.url.split("http://localhost:3000").last)[0..5]=='/billt'
+      image_tag("/images/head/billtax2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/billtax2.jpg';" ,:onmouseout => "this.src='/images/head/billtax2.jpg';")
+    else
+      image_tag("/images/head/billtax1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/billtax2.jpg';" ,:onmouseout => "this.src='/images/head/billtax1.jpg';")
+    end
+  end
+   
+  def h_tax
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/ta'
+      image_tag("/images/head/tax2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/tax2.jpg';" ,:onmouseout => "this.src='/images/head/tax2.jpg';")
+    else
+      image_tag("/images/head/tax1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/tax2.jpg';" ,:onmouseout => "this.src='/images/head/tax1.jpg';")
+    end
+  end  
+  
+  def h_receipt
+    if (request.url.split("http://localhost:3000").last)[0..2]=='/re'
+      image_tag("/images/head/receipt2.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/receipt2.jpg';" ,:onmouseout => "this.src='/images/head/receipt2.jpg';",:class=>"roundr")
+    else
+    image_tag("/images/head/receipt1.jpg",:alt => "home",:onmouseover =>"this.src='/images/head/receipt2.jpg';" ,:onmouseout => "this.src='/images/head/receipt1.jpg';",:class=>"roundr")
+    end
+  end 
+  
+  def back
+    image_tag("/images/icon_back.png",:alt => "Back",:title => "Back",:width => "40",:height => "40")
+  end
+
+end

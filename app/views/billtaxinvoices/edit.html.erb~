@@ -1,0 +1,6 @@
+<h1>ใบเสร็จรับเงิน / ใบกำกับภาษี</h1>
+
+<%= render 'form' %>
+
+<!-- <%= link_to 'Show', @billtaxinvoice %> | -->
+<%= link_to back, request.referer %>

@@ -1,0 +1,59 @@
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'quotations'  %>
+<%= semantic_form_for([@quotation,@item]) do |f| %>
+  <% if @item.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@item.errors.count, "error") %> prohibited this item from being saved:</h2>
+      <br />
+      <ul> 
+      <% @item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <% cookies[:back] = request.referer %>
+<!--     <%= link_to "back", cookies[:back] %> -->
+  <% end %>
+
+  <%= f.inputs do %>
+    <%= f.input :description , :label => 'รายการ ',:hint => 'รายละเอียดสินค้า เช่น เบี้ยเลี้ยงพนักงาน '%>
+    <%= f.input :quantity , :label => 'จำนวน ',:as => :string ,:hint => 'จำนวน ระบุเป็นตัวเลขจำนวนเต็ม หรือทศนิยม'%>
+    <%= f.input :unit_price , :label => 'ราคาต่อหน่วย (บาท) ',:as => :string ,:hint => 'ราคาต่อหน่วย ระบุเป็นตัวเลขจำนวนเต็ม หรือทศนิยม '%>
+  <% end %>
+
+  <%= f.buttons do %>
+    <%= f.commit_button %>
+  <% end %>
+<% end %>
+<% end %>
+
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'receipts'  %>
+<%= semantic_form_for([@receipt,@item]) do |f| %>
+  <% if @item.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@item.errors.count, "error") %> prohibited this item from being saved:</h2>
+      <br />
+      <ul> 
+      <% @item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <% cookies[:back] = request.referer %>
+<!--     <%= link_to "back", cookies[:back] %> -->
+  <% end %>
+
+  <%= f.inputs do %>
+    <%= f.input :description , :label => 'รายการ ',:hint => 'รายละเอียดสินค้า เช่น เบี้ยเลี้ยงพนักงาน '%>
+    <%= f.input :quantity , :label => 'จำนวน ',:as => :string ,:hint => 'จำนวน ระบุเป็นตัวเลขจำนวนเต็มเท่านั้น'%>
+    <%= f.input :unit_price , :label => 'ราคาต่อหน่วย (บาท) ',:as => :string ,:hint => 'ราคาต่อหน่วย ระบุเป็นตัวเลขจำนวนเต็ม หรือทศนิยม '%>
+  <% end %>
+
+  <%= f.buttons do %>
+    <%= f.commit_button %>
+  <% end %>
+<% end %>
+<% end %>
+
+

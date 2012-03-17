@@ -1,0 +1,14 @@
+<!-- <h1>Editing document</h1> -->
+
+<% if @document.type == 'Quotation' %>
+  <h1>Editing quotation</h1>
+  <%= render 'quotations/form' %>
+<% else if @document.type == 'Invoice' %>
+	<h1>Editing invoice</h1>
+	<%= render 'invoices/form' %>
+	<% end %>
+<% end %>
+
+<!-- <%= link_to 'Show', @document %> | -->
+<%= cookies[:back] = request.referer %>
+<%= link_to back, request.referer %>

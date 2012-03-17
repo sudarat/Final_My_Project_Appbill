@@ -1,0 +1,449 @@
+
+<table>
+  <tr>
+    <td><h1>รายการเอกสาร</h1><hr>
+      <%= link_to new_q, new_quotation_path %>
+      <%= link_to allm, documents_path %><%= link_to waitm, documents_dwait_path %><%= link_to notcompletem, documents_dnotcomplete_path %><%= link_to completem, documents_dcomplete_path %>
+    </td>
+    <td>
+      <%= form_tag documents_dwait_path, :method => 'get', :id => "documents_search" do %>
+	<p align=right>
+	  <b>ค้นหาจาก :: </b><%= select_tag(:col, options_for_select([['ลูกค้า', 1], ['ชื่องาน', 2]], params[:col] )) %><br/>
+	  <%= text_field_tag :search, params[:search], :size => 10%>
+	  <%= submit_tag "ค้นหา", :name => nil %>
+	</p>
+	<div id="documents"><%= render 'documents/documents' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= will_paginate @documents ,:class=>"right"%>
+<% if (request.url)["custname"] != nil %>
+<table><%else%><table class="pretty"><% end %>
+
+  <tr style="index">
+    <th width="10px"><center><%= sortable "doc_number","เลขที่" %></th>
+
+    <% if (request.url)["search"] == nil%>
+      <% if (request.url)=='http://localhost:3000/documents/dwait' || ( (request.url)["direction=asc&sort=custname"] == nil && (request.url)["search"] == nil )  %>
+	<th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/documents/dwait?direction=asc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=desc&sort=custname' %> <%= image_tag "down_arrow.gif" %><% end %></th>
+      <% else %><th width="175px"><center><%= link_to "ลูกค้า", "http://localhost:3000/documents/dwait?direction=desc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=asc&sort=custname' %> <%= image_tag "up_arrow.gif" %><% end %></th>
+      <% end %>
+    <% else %>
+      <% @se = params[:search] %><% @di = params[:direction] %><% @so = params[:sort] %><% @col = params[:col]%>
+      <% if @di !='asc' && @di != 'desc' %><% cookies[:linkcust] = 'http://localhost:3000/documents/dwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+	<th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+	<% cookies.delete :linkcust %></th>
+      <% else %><% if (request.url)["custname"] == nil %><% cookies[:linkcust] = 'http://localhost:3000/documents/dwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		  <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		  <% cookies.delete :linkcust %></th>
+		  <% else %>
+		    <% if @di =='asc' %><% cookies[:linkcust] = 'http://localhost:3000/documents/dwait?&search='+@se+'&direction=desc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "up_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% else %><% cookies[:linkcust] = 'http://localhost:3000/documents/dwait?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		      <th width="175px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% end %>
+		  <% end %>
+		<% end %>
+    <% end %>
+    <th width="340px"><center><%= sortable "title" , "ชื่องาน"%></th>
+    <th width="170px"><center><%= sortable "doc_date" ,"กำหนดการยืนราคา"%></th>
+    <th width="10px"><center><%= sortable "complete" , "เสร็จสมบูรณ์"%></th>    
+    <th width="10px"><center><%= sortable "cancel","ใช้งาน" %></th>
+    <th width="100px"><center><%= sortable "updated_at","แก้ไขล่าสุด" %></th>
+    <th width="100px"></th>
+  </tr>
+
+<% @documents.each do |document| %>
+  <% if document.type=="Quotation"%>
+    <!-- เตือน -->
+  <% if (document.approve==true&&document.complete==false&&document.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve==nil) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve==nil) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve==nil) || (Date.today.year>document.doc_date.year&&document.approve==nil && document.cancel==false)  || (Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month&&document.approve==nil && document.cancel==false) || (Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day&&document.approve==nil && document.cancel==false)%>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">
+	Q<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+
+      <td class="bordertop bold">
+	<% if document.title.length <= 32 %><%= document.title %><% else %><%= document.title[0..31]+'...' %><% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.approve != true %>
+	  <font color=red><%= document.doc_date.strftime("%Y-%m-%d") %></font>
+	<% else %>
+	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.approve %>
+	  <% if document.complete == nil || document.complete == false %><%= nonecomplete %>
+	    <% else %><%= complete %><% end %>
+	  <% else %><%= notspecified %>
+	  <% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.cancel%><%= cancel %>
+	<%else%><%= ready %><% end %><% document.cancel %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<%= document.updated_at.strftime("%Y-%m-%d") %></center>
+      </td>
+
+      <td align="right" class="bordertop bold">
+	<% if document.cancel || document.approve || document.approve==false %>
+	  <%= edit_non%>
+	<% else %>
+	  <%= link_to edit, edit_quotation_path(document)  %>
+	<% end %>
+	<%= link_to show, document  %>
+	<% if document.approve && document.complete==false && document.cancel==false %>
+	  <%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	<% else %>
+	  <%= nextt_non %></td>
+	<% end %>
+	
+      </td>
+    </tr>
+  <% else %>
+        <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">
+	Q<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+
+      <td class="bordertop nobold">
+	<% if document.title.length <= 32 %><%= document.title %><% else %><%= document.title[0..31]+'...' %><% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<%= document.doc_date.strftime("%Y-%m-%d") %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.approve %>
+	  <% if document.complete == nil || document.complete == false %><%= nonecomplete %>
+	    <% else %><%= complete %><% end %>
+	  <% else %><%= notspecified %>
+	  <% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.cancel%><%= cancel %>
+	<%else%><%= ready %><% end %><% document.cancel %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<%= document.updated_at.strftime("%Y-%m-%d") %></center>
+      </td>
+
+      <td align="right" class="bordertop nobold">
+	<% if document.cancel || document.approve || document.approve==false %>
+	  <%= edit_non%>
+	<% else %>
+	  <%= link_to edit, edit_quotation_path(document)  %>
+	<% end %>
+	<%= link_to show, document  %>
+	<% if document.approve && document.complete==false && document.cancel==false %>
+	  <%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	<% else %>
+	  <%= nextt_non %></td>
+	<% end %>
+	
+      </td>
+    </tr>
+  <% end %>
+<!-- ========================================================================================================== -->
+  <% else if document.type=="Invoice" %>
+  
+  <% if (document.approve==true&&document.complete==false&&document.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve != true) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve != true) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false&&document.approve!=true) || (Date.today.year>document.doc_date.year&&(document.approve==nil||document.approve==false) && document.cancel==false)  || (Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month&&(document.approve==nil||document.approve==false) && document.cancel==false) || (Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day&&(document.approve==nil||document.approve==false) && document.cancel==false)%>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">I<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+
+      <td class="bordertop  bold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %>
+	  <%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop  bold">
+	<% if document.title.length <= 32 %>
+	  <%= document.title %>
+	<% else %>
+	  <%= document.title[0..31]+'...' %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop  bold"><center>
+	<% if document.approve != true %>
+	  <font color=red><%= document.doc_date.strftime("%Y-%m-%d") %></font>
+	<% else %>
+	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      </td>
+
+<!--      <td class="bordertop"><center>
+	<% if document.approve %><%= paid %>
+	<%else%><%= notpaid %>
+	<% end %>
+      </center></td>-->
+    
+      <td class="bordertop  bold"><center>
+	<% if document.approve %>
+		<% if document.complete == nil || document.complete == false %>
+			<%= nonecomplete %>
+		<% else %>
+			<%= complete %>
+		<% end %>
+	<% else %>
+		<%= notspecified   %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop  bold"><center><% if document.cancel%> <%= cancel %><%else%><%= ready %><% end %></td>
+
+      <td class="bordertop  bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></center></td>
+
+      <td align="right" class="bordertop  bold">
+         <% if document.cancel || document.approve %>
+	  <%= edit_non%>
+	 <% else %><%= link_to edit, edit_invoice_path(document)  %>
+	 <% end %>
+
+	 <%= link_to show, document  %>
+	 <% if document.approve == true && document.cancel == false && document.complete == false %>
+	  <%= link_to nextt,changedoc_invoice_path(document) %></td>
+	 <% else %>
+	  <%= nextt_non %></td>
+	 <% end %>
+    </td>
+  </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">I<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %>
+	  <%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop nobold">
+	<% if document.title.length <= 32 %>
+	  <%= document.title %>
+	<% else %>
+	  <%= document.title[0..31]+'...' %> 
+	<% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+      	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+      </td>
+
+<!--      <td class="bordertop nobold"><center>
+	<% if document.approve %><%= paid %>
+	<%else%><%= notpaid %>
+	<% end %>
+      </center></td>-->
+    
+      <td class="bordertop nobold"><center>
+	<% if document.approve %>
+		<% if document.complete == nil || document.complete == false %>
+			<%= nonecomplete %>
+		<% else %>
+			<%= complete %>
+		<% end %>
+	<% else %>
+		<%= notspecified   %>
+	<% end %>
+      </center></td>
+    
+      <td class="bordertop nobold"><center><% if document.cancel%> <%= cancel %><%else%><%= ready %><% end %></td>
+
+      <td class="bordertop nobold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></center></td>
+
+      <td align="right" class="bordertop">
+         <% if document.cancel || document.approve %>
+	  <%= edit_non%>
+	 <% else %><%= link_to edit, edit_invoice_path(document)  %>
+	 <% end %>
+
+	 <%= link_to show, document  %>
+	 <% if document.approve == true && document.cancel == false && document.complete == false %>
+	  <%= link_to nextt,changedoc_invoice_path(document) %></td>
+	 <% else %>
+	  <%= nextt_non %></td>
+	 <% end %>
+    </td>
+  </tr>
+  <% end %>
+<!-- ====================================================================================================================== -->
+  <% else if document.type=="Bill" %>
+  <% if (document.cancel == false && document.approve && document.complete == false) || (document.cancel == false && document.approve==false) %>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">B<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop bold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+      <td class="bordertop bold"><%= document.title %></td><td class="bordertop bold"><center>-</td>
+      <td class="bordertop"><center><% if document.approve %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+<!--       <td class="bordertop bold"><center><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td> -->
+      <td class="bordertop bold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop bold"><% if document.cancel || document.approve %><%= edit_non%><% else %><%= link_to edit, edit_bill_path(document) %><% end %>
+	<%= link_to show, document %>
+	<% if document.cancel == false && document.approve && document.complete == false %><%= link_to nextt,nextdoc_bill_path(document) %><% else %><%= nextt_non %><% end %>
+      </td>
+    </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">B<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+      <td class="bordertop nobold"><%= document.title %></td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop nobold"><center><% if document.approve %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+<!--       <td class="bordertop"><center><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td> -->
+      <td class="bordertop nobold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if document.cancel || document.approve %><%= edit_non%><% else %><%= link_to edit, edit_bill_path(document) %><% end %>
+	<%= link_to show, document %>
+	<%= nextt_non %>
+      </td>
+    </tr>
+  <% end %>
+
+  <% else if document.type=="Taxinvoice" %>
+  <% if document.cancel == false && document.complete == false %>
+   <tr BGCOLOR="#fefefe">
+    <td class="bordertop bold">T<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+    <td class="bordertop"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+    </td>
+    <td class="bordertop bold"><%= document.title %></td><td class="bordertop nobold"><center>-</td>
+    <td class="bordertop bold"><center><% document.complete %><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+    <td class="bordertop bold"><center><% document.cancel %><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+    <td class="bordertop bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+    <td class="bordertop bold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_taxinvoice_path(document) %><% end %>
+	<%= link_to show, document %>
+    </td>
+<!--     <td><%= link_to 'Destroy', document, :confirm => 'Are you sure?', :method => :delete %></td> -->
+   </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">T<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+      <td class="bordertop nobold"><%= document.title %></td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop nobold"><center><% document.complete %><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% document.cancel %><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_taxinvoice_path(document) %><% end %>
+	<%= link_to show, document %>
+      </td>
+<!--     <td><%= link_to 'Destroy', document, :confirm => 'Are you sure?', :method => :delete %></td> -->
+    </tr>
+  <% end %>
+<!--  ====================================================================================================================  -->
+  <% else if document.type=="Billtaxinvoice" %>
+    <% if document.cancel == false && document.complete == false %>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">BT<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop bold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+      <td class="bordertop bold"><%= document.title %></td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop bold"><center><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop bold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop bold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_billtaxinvoice_path(document) %><% end %>
+	<%= link_to show, document %>
+	
+      </td>
+    </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">BT<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+      <td class="bordertop nobold"><%= document.title %></td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop nobold"><center><% if document.complete %><%= complete %><%else%><%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_billtaxinvoice_path(document) %><% end %>
+	<%= link_to show, document %>
+	
+      </td>
+    </tr>
+  <% end %>
+<!-- ====================================================================================================================== -->
+  <% else if document.type=="Receipt" %>
+  <% if document.cancel == false && document.complete == false %>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">R<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop bold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+	
+      </td>
+<!--       <td class="bordertop bold"><%= document.title %></td> --><td class="bordertop nobold"><center>-</td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop bold"><center><% if document.complete %><%= complete %><%else%> <%= nonecomplete %><% end %></td>
+      <td class="bordertop bold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop bold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_receipt_path(document)%><% end %>
+	<%= link_to show, document %>
+      </td>
+    </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">R<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><center><% if document.customer.custname.length <= 15 %><%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+	
+      </td>
+<!--       <td class="bordertop"><%= document.title %></td> --><td class="bordertop nobold"><center>-</td><td class="bordertop nobold"><center>-</td>
+      <td class="bordertop nobold"><center><% if document.complete %><%= complete %><%else%> <%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% if document.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if document.cancel || document.complete %><%= edit_non%><% else %><%= link_to edit, edit_receipt_path(document)%><% end %>
+	<%= link_to show, document %>
+      </td>
+    </tr>
+  <% end %>
+  <% end %>
+  <% end %>
+  <% end %>
+  <% end %>
+  <% end %>
+  <% end %>
+
+<% end %>
+
+</table>
+
+<br /><center>
+
+<% cookies[:newq] = request.url %>

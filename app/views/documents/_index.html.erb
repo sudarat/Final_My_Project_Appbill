@@ -1,0 +1,40 @@
+<h1>Listing documents</h1>
+<%= form_tag documents_path, :method => 'get', :id => "documents_search" do %>
+  <p>
+    <%= text_field_tag :search, params[:search] %>
+    <%= submit_tag "Search", :name => nil %>
+  </p>
+  <div id="documents"><%= render 'documents/documents' %></div>
+<% end %>
+<table  class="pretty">
+  <tr>
+    <th><%= sortable "title" %></th>
+    <th><%= sortable "doc_date" %></th>
+    <th><%= sortable "doc_number" %></th>
+    <th><%= sortable "approve" %></th>
+    <th><%= sortable "customer_id" %></th>
+    <th><%= sortable "cancle" %></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @documents.each do |document| %>
+  <tr>
+    <td><%= document.title %></td>
+
+    <td><%= document.doc_date %></td>
+    <td><%= document.doc_number %></td>
+    <td><%= document.approve %></td>
+    <td><%= document.customer.custname %></td>
+    <td><%= document.cancle %></td>
+    <td><%= link_to 'Show', document %></td>
+    <td><%= link_to 'Edit', edit_document_path(document) %></td>
+    <td><%= link_to 'Destroy', document, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<%= will_paginate @documents %>
+<!-- <%= link_to 'New Document', new_document_path %> -->

@@ -1,0 +1,142 @@
+<!-- <meta content="text/html; charset=UTF-8" http-equiv="content-type"> -->
+
+<html>
+<table width="100%" height="100%" border=0 CELLSPACING=0 align =center>
+<THEAD>
+  <tr height=30><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc " >
+    <tr>
+      <td width="38%" valign="top">
+
+	<% if @company.complogo.file? %>
+	  <%= image_tag @company.complogo.url(:print) %>
+	<% else %>
+<!-- 	  No attachment available! -->
+	<% end %>
+      </td> 
+      <td width="50%" valign="botton"><p style="margin-top : 1.5em;"><b><font size=4>ใบเสนอราคา</font></p></b></td> 
+    </tr>
+    </table>
+  </td></tr>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compname%></font></td>
+    <td valign="top"><font size=3><b>เลขที่: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    Q<%= @quotation.doc_number[0..1] %>/<%= @quotation.doc_number[2..5] %><font color="FFFFFF"></font></font></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compaddress%></font></td>
+    <td valign="top"><font size=3><b>วันที่:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    <%= Time.now.day%>/<%= "%02d" % Time.now.month%>/<%= Time.now.year+543 %></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3>
+      <% if @company.province.province_name == "กรุงเทพมหานคร" %> แขวง<%= @company.compsub_district%> เขต<%= @company.compdistrict%> <%= @company.province.province_name%>
+	<% else %>ต.<%= @company.compsub_district%> อ.<%= @company.compdistrict%> จ.<%= @company.province.province_name.split("จังหวัด").last%><% end %>
+	</font>
+    <br /></font></td>
+    <td valign="top" ><font size=3><b>เลขประจำตัวผู้เสียภาษี:</b> <%= @company.comptax[0]+'-'+@company.comptax[1..4]+'-'+@company.comptax[5..8]+'-'+@company.comptax[9] %></font></td>
+  </tr>
+</THEAD>
+<TBODY>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr height=25><td colspan=3 valign="middle"><font size=3><b>ชื่องาน : </b><%= @quotation.title %><br /></font></td></tr>
+  <tr height=25><td colspan=3 valign="middle"><font size=3><b>รายละเอียด : </b>
+    <% @quotation.detail.split(/<p>|<\/p>|\r\n/).each do |condition| %>
+      <%= raw(condition) %>
+    <% end %>
+  </font></td></tr>
+<!--   <tr height=25><td colspan=3 valign="middle"><font size=3>INVOICE NUMBER : <%= @quotation.id%>-<%= (@quotation.created_at.year)+543 %><br /></font></td></tr> -->
+  <tr height=25><td colspan=3 valign="middle"><font size=3><b>ระยะเวลาดำเนินการ : </b><%= @quotation.terms %> วัน<br /></font></td></tr>
+
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc ">
+    <tr align="center" class=" borderbottom" valign=middle height=25>
+      <td class="borderright bgdescinv" width="55%"><font size=2 color="FFFFFF"><b>Description</b></td> 
+      <td class="borderright bgdescinv" width="15%"><font size=2 color="FFFFFF"><b>Quantity</b></td> 
+      <td class="borderright bgdescinv" width="15%"><font size=2 color="FFFFFF"><b>Unit Price</b></td> 
+      <td class="bgdescinv"><font size=2 width="15%" color="FFFFFF"><b>Cost</b></td></tr>
+<!--     <font size=2><%= raw(@quotation.details_html) %></font> -->
+    </tr>
+    <% @quotation.items.each do |item| %><font size=2> 
+<tr>
+  <td width="55%" class="bordertop borderright " ><font size=2><%= item.description %></font></td> 
+  <td width="15%" class="bordertop borderright " align= right><font size=2><%= item.quantity %></font></td>
+  <td width="15%" class="bordertop borderright " align= right><img src=/images/print/b.jpg , align=left><font size=2><%= number_with_delimiter(item.unit_price.round(2), :delimiter => ',')  %></font></td>
+  <td class="bordertop " width="15%" align= right><img src=/images/print/b.jpg , align=left><font size=2><%= number_with_delimiter((item.quantity*item.unit_price).round(2), :delimiter => ',')  %></font></td>
+</tr>
+</font><% end %>
+<% if @quotation.tax %>
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2></td> 
+      <td class="borderright " align="center"><font size=2>Subtotal</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= number_with_delimiter(@quotation.subtotal_html.round(2), :delimiter => ',')  %></font></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 ></td> 
+      <td class="borderright" align="center"><font size=2>Tax 7.00%</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= number_with_delimiter(@quotation.tax_html.round(2), :delimiter => ',')  %></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 class="bgdescinv"></td>
+      <td class="borderright bgdescinv" align="center"><font size=2 color="FFFFFF"><b>Total</b></font></td> 
+      <td align= right class="bgdescinv"><font size=2 color="FFFFFF"><img src=/images/print/br.jpg  align=left><b><right><%= number_with_delimiter(@quotation.total_html.round(2), :delimiter => ',') %></b></td> 
+    </tr>
+<% else %>
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 class="bgdescinv"></td>
+      <td class="borderright bgdescinv" align="center"><font size=2 color="FFFFFF"><b>Total</b></font></td> 
+      <td align= right class="bgdescinv"><font size=2 color="FFFFFF"><img src=/images/print/br.jpg  align=left><%= number_with_delimiter(@quotation.subtotal_html.round(2), :delimiter => ',')  %></font></td>
+    </tr>
+<% end %>
+    <tr><td colspan=3 align="center" valign="bottom" height="10px">&nbsp;</td></tr>
+
+    
+    <% if (@quotation.condition != "<br>")%>
+    <tr valign="bottom"><td colspan=4><font size=2><b>เงื่อนไขการรับประกัน</b><br />
+
+    <% @quotation.condition.split(/<p>|<\/p>|\r\n/).each do |condition| %>
+      <%= raw(condition) %>
+    <% end %>
+
+
+    </font></td></tr>
+    <% end %>
+  </table>
+  </td></tr>
+  
+</TBODY>
+
+<TFOOT>
+  <tr align=center height = "5px">
+    <td width = "50%" class="bordertop borderright"><font size=2><b>สำหรับลูกค้า</b></font></td> 
+    <td class="bordertop"><font size=2><b>ผู้เสนอราคา</b></font></td>
+  </TR>
+ <tr class="borderright" height = "10px">
+    <td class="borderright bordertop borderbottom" valign="bottom"><center><font size=2>วันที่  ..../..../........</font></center></td> 
+    <td class="bordertop borderbottom" >
+	  <font size=2><center>ขอแสดงความนับถือ
+	  <br /><br />
+	  <% if @company.compauthor_signature.file? %>
+	    <%= image_tag @company.compauthor_signature.url(:print) %>
+	  <% else %>
+<!-- 	  No attachment available! -->
+	  <% end %><br /><br />
+	  <%= @company.compauthor_name %></font>
+	  <br />
+	  <font size=1.5><%= @company.compauthor_position %>
+    </td>
+  </tr>
+ 
+
+</TFOOT>
+</table>
+<!--  link_to "Download (PDF)",print_quotation_path(@quotation,:format => "pdf") %> -->
+
+</html>

@@ -1,0 +1,10 @@
+<% flash .each do |key, value| %>
+    <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<h1>New quotation</h1>
+<% cookies[:backnewcust] = request.url %>
+<%= render 'form' %>
+
+
+<%= link_to back, cookies[:newq] %>

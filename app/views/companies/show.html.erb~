@@ -1,0 +1,123 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<h1 class="center">ข้อมูลบริษัท</h1>
+
+<%if request.referer.split('http://localhost:3000/companies/').last == 'new' || request.referer.split('http://localhost:3000/').last == 'companies' %>
+  <%= link_to new_q, new_quotation_path %>
+<% end %>
+<%= link_to edit, edit_company_path(@company) %></br>
+<table class="show_company show_company2"> 
+  <tr ><td colspan=2 class="borderdetail"><b><font size=4 color=#fff>ข้อมูลบริษัท</font></b></td></tr>
+  <tr>
+      <td colspan=2 class="borderdetail"><center>
+	<% if @company.complogo.file? %>
+	  <%= image_tag @company.complogo.url(:medium) %>
+	<% else %>
+<!-- 	  No attachment available! -->
+	<% end %>
+
+      </td>
+  </tr>
+  <tr><p>
+<!--       <td width=50px></td> -->
+      <td width=200px class="borderdetail"><b>ชื่อบริษัท : </b></td>
+      <td class="borderdetail"><%= @company.compname %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>ที่อยู่ : </b></td>
+      <td class="borderdetail"><%= @company.compaddress %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>ถนน : </b></td>
+      <td class="borderdetail"><% if @company.compstreet.length != 0 %>
+				<%= @company.compstreet %>
+			        <% else %> -
+			       <% end %></td>
+  </p></tr>
+<% if @company.province.province_name != "กรุงเทพมหานคร" %>
+  <tr><p>
+      <td class="borderdetail"><b>ตำบล : </b></td>
+      <td class="borderdetail"><%= @company.compsub_district %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>อำเภอ : </b></td>
+      <td class="borderdetail"><%= @company.compdistrict %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>จังหวัด : </b></td>
+      <td class="borderdetail"><%= @company.province.province_name.split("จังหวัด").last %></td>
+  </p></tr>
+
+<% else %>
+  <tr><p>
+      <td class="borderdetail"><b>แขวง : </b></td>
+      <td class="borderdetail"><%= @company.compsub_district %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เขต : </b></td>
+      <td class="borderdetail"><%= @company.compdistrict %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>จังหวัด : </b></td>
+      <td class="borderdetail"><%= @company.province.province_name %></td>
+  </p></tr>
+<% end %>
+
+
+  
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรศัพท์ : </b></td>
+      <td class="borderdetail"><%= @company.comptel %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรสาร : </b></td>
+      <% if @company.compfax.length != 0 %>
+	<td class="borderdetail"><%= @company.compfax %></td>
+      <% else %> <td> -</td>
+      <% end %>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เลขประจำตัวผู้เสียภาษี : </b></td>
+      <td class="borderdetail"><%= @company.comptax %></td>
+  </p></tr>
+</table>
+
+<table class="show_company show_company2 show_company3"> 
+  <tr><td colspan=2 class="borderdetail"><b><font size=4 color=#fff>ข้อมูลผู้มีอำนาจอนุมัติ</font></b></td></tr>
+  <tr><p>
+      <td width=200px class="borderdetail"><b>ชื่อผู้มีอำนาจอนุมัติ : </b></td>
+      <td class="borderdetail"><%= @company.compauthor_name %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>ตำแหน่ง : </b></td>
+      <td class="borderdetail">
+	<%= @company.compauthor_position == nil %>
+	  <%= "-" %>
+	<% else %> <%= @company.compauthor_position %>
+	<% end %>
+      </td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail"><b>เบอร์โทรศัพท์ : </b></td>
+      <td class="borderdetail"><%= @company.compauthor_tel %></td>
+  </p></tr>
+  <tr><p>
+      <td class="borderdetail" ><b>ลายเซ็นต์ : </b></td>
+      <td class="borderdetail">
+	<% if @company.compauthor_signature.file? %>
+	  <%= image_tag @company.compauthor_signature.url(:medium) %>
+	<% else %>-
+<!-- 	  No attachment available! -->
+	<% end %>
+
+</td>
+  </p></tr>
+</table>
+
+<div><%= link_to edit, edit_company_path(@company) %></div>
+<br />
+<!--
+<%= link_to edit, edit_company_path(@company) %> -->
+<!-- | <%= link_to 'Back', companies_path %> -->

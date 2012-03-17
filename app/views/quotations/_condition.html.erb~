@@ -1,0 +1,5 @@
+<script type="text/javascript">
+       bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+</script>
+
+<%= @quotation.text_area :condition  , :cols=>"80", :rows=>"10" ,	:input_html => { :rows => 5 }%>

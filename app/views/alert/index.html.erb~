@@ -1,0 +1,453 @@
+
+<table>
+  <tr>
+    <td><h1>Listing documents</h1> </td>
+    <td>
+      <%= form_tag documents_path, :method => 'get', :id => "documents_search" do %>
+	<p  align=right>
+	  <%= text_field_tag :search, params[:search] %>
+	  <%= submit_tag "Search", :name => nil %>
+	</p>
+	<div id="documents"><%= render 'documents/documents' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= link_to new_q, new_quotation_path %><%= will_paginate @documents ,:class=>"right"%>
+<table class="pretty">
+  <tr>
+    <th width="10px"><center><%= sortable "doc_number","NO." %></center></th>
+    <th width="200px"><center><%= "Customer" %></th>
+    <th width="350px"><center><%= sortable "title" %></th>
+    <th width="10px"><center><%= sortable "doc_date" ,"Due date"%></th>
+    <th width="10px"><center><%= sortable "complete" %></th>    
+    <th width="10px"><center><%= sortable "cancel","Status" %></th>
+    <th width="10px"><center><%= sortable "updated_at","Update" %></th>
+    <th width="100px"></th>
+  </tr>
+
+<% @documents.each do |document| %>
+
+
+  <% if document.type == "Quotation" %>
+    
+    <% if document.approve==true&&document.complete==true&&document.cancel==false %>
+<!--================================================================================================
+================================================================================================
+================================================================================================
+================================================================================================-->
+ 
+<!--================================================================================================
+================================================================================================
+================================================================================================
+================================================================================================-->
+    <% else if (document.approve==true&&document.complete==false&&document.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || (Date.today.year>document.doc_date.year&&document.approve==nil && document.cancel==false)  || (Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month&&document.approve==nil && document.cancel==false) || (Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day&&document.approve==nil && document.cancel==false)%>
+	<% if document== nil %>
+	  <tr BGCOLOR="#fefefe" >
+	        <td class="bordertop bold"><%= document.doc_number %></td>
+    <td class="bordertop bold" ><center>
+      <% document.customer.custname %>
+      <% if document.customer.custname.length <= 15 %>
+	<%= link_to document.customer.custname , customer_path(document.customer_id)%>
+      <% else %>
+	<%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %> 
+      <% end %>
+    </td>
+    <td class="bordertop bold">
+      <% if document.title.length <= 32 %>
+	<%= document.title %>
+      <% else %>
+	<%= document.title[0..31]+'...' %> 
+      <% end %>
+    </td>
+    <td class="bordertop bold"><center>
+      <% if document.type == "Quotation" %>
+	<% if document.approve==nil && document.cancel==false %>
+	  <% if Date.today.yesterday.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	  <% if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	  <% if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	<% end %>
+
+	<% if document.approve==nil && document.cancel==false %>
+	  <% if Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || (Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d")) %>
+	    <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+	  <% else  if Date.today.year>document.doc_date.year  %>
+		  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+		  <% else if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+			  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+			  <% else if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day %>
+				  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+				  <% else %>
+				  <%= document.doc_date.strftime("%Y-%m-%d") %>
+				  <% end %>
+			  <% end %>
+		  <% end %>
+	  <% end %>
+	<% else %>
+	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      <% else if document.type == "Invoice" %>
+		<% if document.approve==false && document.cancel==false %>
+	<% if Date.today.yesterday.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+	<% if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+	<% if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+		<% end %>
+
+      <% if document.cancel==false%>
+	<% if Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d")%>
+	  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% else  if Date.today.year>document.doc_date.year  %>
+		<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+		<% else if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+			<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+			<% else if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day %>
+				<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+				<% else %>
+				<%= document.doc_date.strftime("%Y-%m-%d") %>
+				<% end %>
+			<% end %>
+		<% end %>
+	<% end %>
+      <% else %>
+	<%= document.doc_date.strftime("%Y-%m-%d") %>
+      <% end %>
+	      <% end %>
+      <% end %>
+    </td>
+<!--
+    <td><center>
+      <% if document.type == "Quotation" %>
+	<% if document.approve  %>
+		<%= approve %><!--<%= document.approve  %>-->
+<!--	<% else if document.approve == nil %>
+			<%= wait %><!--<%= document.approve  %>-->
+<!--		<% else %>
+			<%= reject %><!--<%= document.approve  %>-->
+<!--		<% end %>
+	<% end %>
+      <% end %>
+    </center></td>-->
+
+    <td class="bordertop bold"><center>
+<!-- UPDATE COMPLETE -->
+<!--    q=Document.find(id = 48)-->
+	<% if document.approve %>
+		<% if document.complete == nil || document.complete == false %>
+			<%= nonecomplete %><!--<%= document.complete %>-->
+		<% else %>
+			<%= complete %><!--<%= document.complete %>-->
+		<% end %>
+	<% else %>
+		<!--<%= 'ไม่ระบุ' %><%= document.complete %>-->
+		<%= notspecified   %>
+	<% end %>
+    </center></td>
+    
+    <td class="bordertop bold"><center>
+      <% if document.cancel%> <%= cancel %>
+      <%else%> <%= ready %>
+      <% end %>
+      <% document.cancel %> 
+    </center></td>
+    <td class="bordertop bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></center></td>
+    <td align="right" class="bordertop">
+<!-- Edit  -->
+    <% if document.type == "Quotation" %>
+      <% if document.cancel || document.approve || document.approve==false %>
+	<%= edit_non%>
+      <% else %><%= link_to edit, edit_document_path(document)  %>
+      <% end %>
+    <% else if document.type == "Invoice" %>
+	      <% if document.cancel || document.approve %>
+		<%= edit_non%>
+	      <% else %><%= link_to edit, edit_document_path(document)  %>
+	      <% end %>
+	    <% end %>
+    <% end %>
+<!-- END Edit -->
+    <%= link_to show, document  %>
+    <% if document.type == "Quotation" %>
+      <% @items = Item.find(:all, :conditions => { :quotation_id => document.id }) %>
+	
+	<% @items.each do |item| %>
+		<% if item.invoice_id == nil || item.invoice_id == 0 %>
+			<% @comp = @comp + 1 %>
+		<% end %>
+	<% end %>
+
+	<% if document.approve %>
+	  <% if @comp == 0 %>
+	    <% document.complete = true %>
+	    <% document.update_attributes(params[document]) %>
+	  <% else %>
+	    <% document.complete = false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	<% end %>
+      
+ 	<% @comp %>
+	<% if document.type == 'Quotation' %>
+	    <% if document.approve && @comp > 0 && document.cancel == false %>
+		<%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	    <% else %>
+		<%= nextt_non %></td>
+	    <% end %>
+	<% end %>
+      <% @comp = 0%>
+    <% else %>
+      <% if document.type == 'Invoice' %>
+	    <% if document.approve == true && document.cancel == false %>
+		<%= link_to nextt,nextdoc_invoice_path(document) %></td>
+	    <% else %>
+		<%= nextt_non %></td>
+	    <% end %>
+	<% end %>
+    <% end %>
+    </td>
+<!--     <td><%= link_to 'Destroy', document, :confirm => 'Are you sure?', :method => :delete %></td> -->
+  </tr>
+  <% end %>
+<!--=========================================================================================================================================
+=========================================================================================================================================
+=========================================================================================================================================-->
+	  <% else %>
+	  
+<!--=========================================================================================================================================
+=========================================================================================================================================
+=========================================================================================================================================-->
+	  <% end %>
+    <% end %>
+  <% else if document.type == "Invoice"%>
+    <% if document.approve == false %>
+	  <% if (document.approve==true&&document.complete==false&&document.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false)|| (Date.today.year>document.doc_date.year&&document.approve==false && document.cancel==false)  || (Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month &&document.approve==false && document.cancel==false) || (Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day&&document.approve==false && document.cancel==false) %>
+	    <tr BGCOLOR="#fefefe">
+	          <td class="bordertop bold"><%= document.doc_number %></td>
+    <td class="bordertop  bold"><center>
+      <% document.customer.custname %>
+      <% if document.customer.custname.length <= 15 %>
+	<%= link_to document.customer.custname , customer_path(document.customer_id)%>
+      <% else %>
+	<%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %> 
+      <% end %>
+    </td>
+    <td class="bordertop  bold">
+      <% if document.title.length <= 32 %>
+	<%= document.title %>
+      <% else %>
+	<%= document.title[0..31]+'...' %> 
+      <% end %>
+    </td>
+    <td class="bordertop  bold"><center>
+      <% if document.type == "Quotation" %>
+	<% if document.approve==nil && document.cancel==false %>
+	  <% if Date.today.yesterday.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	  <% if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	  <% if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day %>
+	    <% document.cancel=true %>
+	    <% document.approve=false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	<% end %>
+
+	<% if document.approve==nil && document.cancel==false%>
+	  <% if Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d")%>
+	    <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+	  <% else  if Date.today.year>document.doc_date.year  %>
+		  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+		  <% else if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+			  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+			  <% else if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day %>
+				  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+				  <% else %>
+				  <%= document.doc_date.strftime("%Y-%m-%d") %>
+				  <% end %>
+			  <% end %>
+		  <% end %>
+	  <% end %>
+	<% else %>
+	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      <% else if document.type == "Invoice" %>
+		<% if document.approve==false && document.cancel==false %>
+	<% if Date.today.yesterday.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+	<% if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+	<% if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day %>
+	  <% document.cancel=true %>
+	  <% document.update_attributes(params[document]) %>
+	<% end %>
+		<% end %>
+
+      <% if document.cancel==false && document.approve==false%>
+	<% if Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") || Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d") %>
+	  <font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% else  if Date.today.year>document.doc_date.year  %>
+		<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+		<% else if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month %>
+			<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+			<% else if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day %>
+				<font color=red><b><%= document.doc_date.strftime("%Y-%m-%d") %>
+				<% else %>
+				<%= document.doc_date.strftime("%Y-%m-%d") %>
+				<% end %>
+			<% end %>
+		<% end %>
+	<% end %>
+      <% else %>
+	<%= document.doc_date.strftime("%Y-%m-%d") %>
+      <% end %>
+	      <% end %>
+      <% end %>
+    </td>
+<!--
+    <td><center>
+      <% if document.type == "Quotation" %>
+	<% if document.approve  %>
+		<%= approve %><!--<%= document.approve  %>-->
+<!--	<% else if document.approve == nil %>
+			<%= wait %><!--<%= document.approve  %>-->
+<!--		<% else %>
+			<%= reject %><!--<%= document.approve  %>-->
+<!--		<% end %>
+	<% end %>
+      <% end %>
+    </center></td>-->
+
+    <td class="bordertop  bold"><center>
+<!-- UPDATE COMPLETE -->
+<!--    q=Document.find(id = 48)-->
+	<% if document.approve %>
+		<% if document.complete == nil || document.complete == false %>
+			<%= nonecomplete %><!--<%= document.complete %>-->
+		<% else %>
+			<%= complete %><!--<%= document.complete %>-->
+		<% end %>
+	<% else %>
+		<!--<%= 'ไม่ระบุ' %><%= document.complete %>-->
+		<%= notspecified   %>
+	<% end %>
+    </center></td>
+    
+    <td class="bordertop  bold"><center>
+      <% if document.cancel%> <%= cancel %>
+      <%else%> <%= ready %>
+      <% end %>
+      <% document.cancel %> 
+    </center></td>
+    <td class="bordertop  bold"><center><%= document.updated_at.strftime("%Y-%m-%d") %></center></td>
+    <td align="right" class="bordertop  bold">
+<!-- Edit  -->
+    <% if document.type == "Quotation" %>
+      <% if document.cancel || document.approve || document.approve==false %>
+	<%= edit_non%>
+      <% else %><%= link_to edit, edit_document_path(document)  %>
+      <% end %>
+    <% else if document.type == "Invoice" %>
+	      <% if document.cancel || document.approve %>
+		<%= edit_non%>
+	      <% else %><%= link_to edit, edit_document_path(document)  %>
+	      <% end %>
+	    <% end %>
+    <% end %>
+<!-- END Edit -->
+    <%= link_to show, document  %>
+    <% if document.type == "Quotation" %>
+      <% @items = Item.find(:all, :conditions => { :quotation_id => document.id }) %>
+	
+	<% @items.each do |item| %>
+		<% if item.invoice_id == nil || item.invoice_id == 0 %>
+			<% @comp = @comp + 1 %>
+		<% end %>
+	<% end %>
+
+	<% if document.approve %>
+	  <% if @comp == 0 %>
+	    <% document.complete = true %>
+	    <% document.update_attributes(params[document]) %>
+	  <% else %>
+	    <% document.complete = false %>
+	    <% document.update_attributes(params[document]) %>
+	  <% end %>
+	<% end %>
+      
+ 	<% @comp %>
+	<% if document.type == 'Quotation' %>
+	    <% if document.approve && @comp > 0 && document.cancel == false %>
+		<%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	    <% else %>
+		<%= nextt_non %></td>
+	    <% end %>
+	<% end %>
+      <% @comp = 0%>
+    <% else %>
+      <% if document.type == 'Invoice' %>
+	    <% if document.approve == true && document.cancel == false %>
+		<%= link_to nextt,nextdoc_invoice_path(document) %></td>
+	    <% else %>
+		<%= nextt_non %></td>
+	    <% end %>
+	<% end %>
+    <% end %>
+    </td>
+<!--     <td><%= link_to 'Destroy', document, :confirm => 'Are you sure?', :method => :delete %></td> -->
+  </tr>
+  <% end %>
+<!--==========================================================================================================================
+==========================================================================================================================
+==========================================================================================================================
+==========================================================================================================================-->
+	  <% else %>
+
+<!--=========================================================================================================================================
+=========================================================================================================================================
+=========================================================================================================================================-->
+	  <% end %>
+	<% else %>
+	  
+<!--=========================================================================================================================================
+=========================================================================================================================================
+=========================================================================================================================================-->
+	<% end %>
+  <% end %>
+
+<% end %>
+</table>
+
+<br /><center>
+
+<!-- <%= link_to 'New Document', new_document_path %> -->

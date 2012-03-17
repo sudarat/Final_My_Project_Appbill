@@ -1,0 +1,8 @@
+<header>
+<!--   <% image_tag '/images/head/banner.jpg' ,:class=>"roundf",:width => "1110",:height => "200"%> -->
+  <% if Company.find(:all).empty? %>
+  <% else %>
+    <%= link_to h_home,root_path %><%= link_to h_company,comp_link %><%= link_to h_customer,customers_path%><%= link_to h_quota,quotations_path%><%= link_to h_inv,invoices_path%><%= link_to h_bill,bills_path%><%= link_to h_tax,taxinvoices_path%><%= link_to h_billtax,billtaxinvoices_path %><%= link_to h_receipt,receipts_path%>
+  <% end %>
+
+</header>

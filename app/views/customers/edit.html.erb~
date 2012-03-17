@@ -1,0 +1,12 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<h1>Editing customer</h1>
+
+<%= render 'form' %>
+
+<!--<%= link_to show, @customer %> |-->
+
+<% cookies[:back] = request.referer %>
+<%= link_to back, cookies[:editcust] %>

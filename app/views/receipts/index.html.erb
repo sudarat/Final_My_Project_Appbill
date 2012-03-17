@@ -1,0 +1,94 @@
+<table>
+  <tr>
+    <td><h1>รายการใบสำคัญรับเงิน</h1><hr>
+      <%= link_to new_r, new_receipt_path %>
+      <%= link_to allm, receipts_path %><%= link_to notcompletem, receipts_rwait_path %><%= link_to deliverm, receipts_rcomplete_path %>
+    </td>
+    <td>
+      <%= form_tag receipts_path, :method => 'get', :id => "receipts_search" do %>
+	<p align=right>
+	  <b>ค้นหาจาก :: </b><%= select_tag(:col, options_for_select([['ลูกค้า', 1]], params[:col] )) %><br/>
+	  <%= text_field_tag :search, params[:search], :size => 10%>
+	  <%= submit_tag "ค้นหา", :name => nil %>
+	</p>
+	<div id="receipts"><%= render 'receipts/receipts' %></div>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<%= will_paginate @receipts ,:class=>"right"%>
+<% if (request.url)["custname"] != nil %>
+<table><%else%><table class="pretty"><% end %>
+
+  <tr style="index">
+    <th width="50px"><center><%= sortable "doc_number","เลขที่" %></th>
+
+    <% if (request.url)["search"] == nil%>
+      <% if (request.url)=='http://localhost:3000/receipts' || ( (request.url)["direction=asc&sort=custname"] == nil && (request.url)["search"] == nil )  %>
+	<th width="500px"><center><%= link_to "ลูกค้า", "http://localhost:3000/receipts?direction=asc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=desc&sort=custname' %> <%= image_tag "down_arrow.gif" %><% end %></th>
+      <% else %><th width="500px"><center><%= link_to "ลูกค้า", "http://localhost:3000/receipts?direction=desc&sort=custname" %>
+	<% if (request.url).split('?').last == 'direction=asc&sort=custname' %> <%= image_tag "up_arrow.gif" %><% end %></th>
+      <% end %>
+    <% else %>
+      <% @se = params[:search] %><% @di = params[:direction] %><% @so = params[:sort] %><% @col = params[:col]%>
+      <% if @di !='asc' && @di != 'desc' %><% cookies[:linkcust] = 'http://localhost:3000/receipts?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+	<th width="500px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+	<% cookies.delete :linkcust %></th>
+      <% else %><% if (request.url)["custname"] == nil %><% cookies[:linkcust] = 'http://localhost:3000/receipts?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		  <th width="500px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		  <% cookies.delete :linkcust %></th>
+		  <% else %>
+		    <% if @di =='asc' %><% cookies[:linkcust] = 'http://localhost:3000/receipts?&search='+@se+'&direction=desc&sort=custname&col='+@col %>
+		      <th width="500px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "up_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% else %><% cookies[:linkcust] = 'http://localhost:3000/receipts?&search='+@se+'&direction=asc&sort=custname&col='+@col %>
+		      <th width="500px"><center><%= link_to "ลูกค้า", cookies[:linkcust] %><% if (request.url)["custname"] != nil %> <%= image_tag "down_arrow.gif" %><% end %>
+		      <% cookies.delete :linkcust %></th>
+		    <% end %>
+		  <% end %>
+		<% end %>
+    <% end %>
+<!--     <th width="500px"><center><%= sortable "title" %></th> -->
+    <th width="100px"><center><%= sortable "complete","เสร็จสมบูรณ์" %></th>
+    <th width="100px"><center><%= sortable "cancel","ใช้งาน" %></th>
+    <th width="100px"><center><%= sortable "updated_at","แก้ไขล่าสุด" %></th>
+    <th width="90px"></th>
+  </tr>
+
+<% @receipts.each do |receipt| %>
+  <% if receipt.cancel == false && receipt.complete == false %>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">R<%= receipt.doc_number[0..1] %>/<%= receipt.doc_number[2..5] %></td>
+      <td class="bordertop bold"><%= link_to receipt.customer.custname, customer_path(receipt.customer_id) %>
+	
+      </td>
+<!--       <td class="bordertop bold"><%= receipt.title %></td> -->
+      <td class="bordertop bold"><center><% if receipt.complete %><%= complete %><%else%> <%= nonecomplete %><% end %></td>
+      <td class="bordertop bold"><center><% if receipt.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop bold"><center><%= receipt.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop bold"><% if receipt.cancel || receipt.complete %><%= edit_non%><% else %><%= link_to edit, edit_receipt_path(receipt)%><% end %>
+	<%= link_to show, receipt %>
+      </td>
+    </tr>
+  <% else %>
+    <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">R<%= receipt.doc_number[0..1] %>/<%= receipt.doc_number[2..5] %></td>
+      <td class="bordertop nobold"><%= link_to receipt.customer.custname , customer_path(receipt.customer_id)%>
+	
+	
+      </td>
+<!--       <td class="bordertop"><%= receipt.title %></td> -->
+      <td class="bordertop nobold"><center><% if receipt.complete %><%= complete %><%else%> <%= nonecomplete %><% end %></td>
+      <td class="bordertop nobold"><center><% if receipt.cancel%><%= cancel %><%else%><%= ready %><% end %></td>
+      <td class="bordertop nobold"><center><%= receipt.updated_at.strftime("%Y-%m-%d") %></td>
+      <td class="bordertop nobold"><% if receipt.cancel || receipt.complete %><%= edit_non%><% else %><%= link_to edit, edit_receipt_path(receipt)%><% end %>
+	<%= link_to show, receipt %>
+      </td>
+    </tr>
+  <% end %>
+<% end %>
+</table>
+<br />
+

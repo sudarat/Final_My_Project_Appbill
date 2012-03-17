@@ -1,0 +1,3 @@
+<!-- <img src="home1.jpg"><img src="customer2.jpg"><img src="quota1.jpg"><img src="inv1.jpg"><img src="h1.jpg"><img src="h1.jpg"><img src="h1.jpg"> -->
+
+<img src="home1.jpg" onmouseover="this.src='home2.jpg';" onmouseout="this.src='home1.jpg';" >,<img src="customer1.jpg" onmouseover="this.src='customer2.jpg';" onmouseout="this.src='customer1.jpg';" ><img src="quota1.jpg" onmouseover="this.src='quota2.jpg';" onmouseout="this.src='quota1.jpg';" ><img src="inv1.jpg" onmouseover="this.src='inv2.jpg';" onmouseout="this.src='inv1.jpg';" ><img src="bill1.jpg" onmouseover="this.src='bill2.jpg';" onmouseout="this.src='bill1.jpg';" >

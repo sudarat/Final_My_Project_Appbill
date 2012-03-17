@@ -1,0 +1,109 @@
+  <% if (document.approve==true&&document.complete==false&&document.cancel==false) || ((Date.today.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || ((Date.today.tomorrow.tomorrow.tomorrow.strftime("%Y-%m-%d")==document.doc_date.strftime("%Y-%m-%d"))&&document.cancel==false) || (Date.today.year>document.doc_date.year&&document.approve==nil && document.cancel==false)  || (Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month&&document.approve==nil && document.cancel==false) || (Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>=document.doc_date.day&&document.approve==nil && document.cancel==false)%>
+    <tr BGCOLOR="#fefefe">
+      <td class="bordertop bold">
+	Q<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+
+      <td class="bordertop bold">
+	<% if document.title.length <= 32 %><%= document.title %><% else %><%= document.title[0..31]+'...' %><% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.approve != true %>
+	  <font color=red><%= document.doc_date.strftime("%Y-%m-%d") %></font>
+	<% else %>
+	  <%= document.doc_date.strftime("%Y-%m-%d") %>
+	<% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.approve %>
+	  <% if document.complete == nil || document.complete == false %><%= nonecomplete %>
+	    <% else %><%= complete %><% end %>
+	  <% else %><%= notspecified %>
+	  <% end %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<% if document.cancel%><%= cancel %>
+	<%else%><%= ready %><% end %><% document.cancel %>
+      </td>
+
+      <td class="bordertop bold"><center>
+	<%= document.updated_at.strftime("%Y-%m-%d") %></center>
+      </td>
+
+      <td align="right" class="bordertop bold">
+	<% if document.cancel || document.approve || document.approve==false %>
+	  <%= edit_non%>
+	<% else %>
+	  <%= link_to edit, edit_quotation_path(document)  %>
+	<% end %>
+	<%= link_to show, document  %>
+	<% if document.approve && document.complete==false && document.cancel==false %>
+	  <%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	<% else %>
+	  <%= nextt_non %></td>
+	<% end %>
+	
+      </td>
+    </tr>
+  <% else %>
+        <tr BGCOLOR="#f5f5f5">
+      <td class="bordertop nobold">
+	Q<%= document.doc_number[0..1] %>/<%= document.doc_number[2..5] %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.customer.custname.length <= 15 %>
+	  <%= link_to document.customer.custname , customer_path(document.customer_id)%>
+	<% else %><%= link_to document.customer.custname[0..15]+'...', customer_path(document.customer_id) %><% end %>
+      </td>
+
+      <td class="bordertop nobold">
+	<% if document.title.length <= 32 %><%= document.title %><% else %><%= document.title[0..31]+'...' %><% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<%= document.doc_date.strftime("%Y-%m-%d") %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.approve %>
+	  <% if document.complete == nil || document.complete == false %><%= nonecomplete %>
+	    <% else %><%= complete %><% end %>
+	  <% else %><%= notspecified %>
+	  <% end %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<% if document.cancel%><%= cancel %>
+	<%else%><%= ready %><% end %><% document.cancel %>
+      </td>
+
+      <td class="bordertop nobold"><center>
+	<%= document.updated_at.strftime("%Y-%m-%d") %></center>
+      </td>
+
+      <td align="right" class="bordertop nobold">
+	<% if document.cancel || document.approve || document.approve==false %>
+	  <%= edit_non%>
+	<% else %>
+	  <%= link_to edit, edit_quotation_path(document)  %>
+	<% end %>
+	<%= link_to show, document  %>
+	<% if document.approve && document.complete==false && document.cancel==false %>
+	  <%= link_to nextt,nextdoc_quotation_path(document) %></td>
+	<% else %>
+	  <%= nextt_non %></td>
+	<% end %>
+	
+      </td>
+    </tr>
+  <% end %>

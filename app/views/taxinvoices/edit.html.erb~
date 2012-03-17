@@ -1,0 +1,6 @@
+<h1>Editing taxinvoice</h1>
+
+<%= render 'form' %>
+
+<!-- <%= link_to 'Show', @taxinvoice %> | -->
+  <%= link_to back, request.referer %>

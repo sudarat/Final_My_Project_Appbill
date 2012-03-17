@@ -1,0 +1,44 @@
+<%= semantic_form_for(@company, :html => { :multipart => true }) do |f| %>
+  <% if @company.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@company.errors.count, "error") %> prohibited this company from being saved:</h2>
+      <br />
+      <ul>
+      <% @company.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.inputs do %>
+    <%= f.input :compname  , :label => 'ชื่อบริษัท ' ,:hint => 'กรอกชื่อบริษัทผู้ใช้'%>
+    <%= f.input :complogo  , :label => 'สัญลักษณ์ ' ,:hint => 'เฉพาะไฟล์นามสกุล JPG หรือ PNG ที่มีขนาดใหญ่กว่า 170 x 170 px เท่านั้น'%><br>
+<!--    <%= f.file_field :complogo  , :label => 'ชื่อบริษัท'%> -->
+    <%= f.input :compaddress  , :label => 'ที่อยู่ ',	:input_html => { :rows => 5 } ,:hint => 'Ex. 79/1 หมู่บ้านสันติสุข ซอยประชาชื่น ' %>
+    <%= f.input :compstreet , :label => 'ถนน ',:hint => 'Ex. สุขุมวิท'%>
+    <%= f.input :compsub_district , :label => 'ตำบล/แขวง ',:hint => 'Ex. สนามจันทร์'%>
+    <%= f.input :compdistrict  , :label => 'อำเภอ/เขต ',:hint => 'Ex. เมือง'%>
+    <%= f.input :province , :label => "จังหวัด ", :as => :select , :member_label => :province_name , :include_blank => 'Change Province' %> 
+    <%= f.input :comptel  , :label => 'เบอร์โทรศัพท์ ' ,:hint => 'Ex. 02-9310022,084-7797784' %>
+    <%= f.input :compfax  , :as => :string , :label => 'เบอร์โทรสาร ' ,:hint => 'Ex. 02-9310022'%>
+    <%= f.input :comptax  , :label => 'เลขประจำตัวผู้เสียภาษี ' ,:hint => 'Ex. 1223153721'%>
+    <%= f.input :compauthor_name  , :label => 'ชื่อผู้อำนาจอนุมัติ ' ,:hint => 'Ex. นายธุรกิจ งานก้าวหน้า' %>
+    <%= f.input :compauthor_position  , :label => 'ตำแหน่ง ',:hint => 'Ex. Chief Software Architect' %>
+    <%= f.input :compauthor_tel  , :label => 'เบอร์โทรศัพท์ ',:hint => 'Ex. 02-9310022,084-7797784' %>
+    <%= f.input :compauthor_signature  , :label => 'ลายเซ็นต์ ' ,:hint => 'เฉพาะไฟล์นามสกุล JPG หรือ PNG ที่มีขนาดใหญ่กว่า 110 x 110 px เท่านั้น'%>
+    <% if @company.compauthor_signature.url != nil %>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;
+<!--       <%= image_tag @company.compauthor_signature.url(:medium) %> -->
+    <% end %>
+  <% end %>
+<!--   </br> -->
+  <%= f.buttons do %>
+    <%= f.commit_button %>
+  <% end %>
+<% end %>

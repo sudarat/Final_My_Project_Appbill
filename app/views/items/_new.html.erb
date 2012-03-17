@@ -1,0 +1,10 @@
+<!--<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>-->
+
+<h1>Add item</h1><br />
+<%= render "form" %> 
+<!-- <%= cookies[:back] = request.referer %> -->
+
+
+<%= link_to "back", manageitem_quotation_path(@quotation) %>

@@ -1,0 +1,154 @@
+class CustomersController < ApplicationController
+  
+  helper_method :sort_column, :sort_direction
+  
+  # GET /customers
+  # GET /customers.xml
+  def index
+#     @customers = Customer.all
+     if (params[:col] == '1')
+      @customers = Customer.searchcustname(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 20, :page => params[:page])
+     else if (params[:col] == '2')
+	    @customers = Customer.searchcustcontact(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:per_page => 20, :page => params[:page])
+	  else
+	    @customers = Customer.order(sort_column + ' ' + sort_direction).paginate(:per_page => 20, :page => params[:page])
+	  end
+     end
+     cookies.delete :back_doc
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @customers }
+      format.json  { render :json => @customers }
+    end
+  end
+
+  # GET /customers/1
+  # GET /customers/1.xml
+  def show
+    @customer = Customer.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @customer }
+      format.json  { render :json => @customer }
+    end
+  end
+  
+  # GET /customers/new
+  # GET /customers/new.xml
+  def new
+    @customer = Customer.new
+#     run_custnumber
+    respond_to do |format|
+      format.html # new.html.erb
+      format.xml  { render :xml => @customer }
+      format.json  { render :json => @customer }
+    end
+  end
+
+  # GET /customers/1/edit  
+  def edit
+    @customer = Customer.find(params[:id])
+  end
+  
+  # POST /customers
+  # POST /customers.xml
+  def create
+    @customer = Customer.new(params[:customer])
+#     run_custnumber
+    run_compid
+    respond_to do |format|
+      if @customer.save
+	
+	if cookies[:backnewcust].split('http://localhost:3000/').last == 'quotations/new'
+	  cookies.delete :backnewcust
+# 	  format.html { redirect_to(new_quotation_path, :notice => 'Customer was successfully created.') }
+	  format.html { redirect_to(@customer, :notice => 'Customer was successfully created.') }
+	else
+	  if cookies[:backnewcust].split('http://localhost:3000/').last == 'receipts/new'
+	  cookies.delete :backnewcust
+	  format.html { redirect_to(@customer, :notice => 'Customer was successfully created.') }
+	  else
+	    cookies.delete :backnewcust
+	    format.html { redirect_to(@customer, :notice => 'Customer was successfully created.') }
+	  end
+	end
+        format.xml  { render :xml => @customer, :status => :created, :location => @customer }
+      else
+        format.html { render :action => "new" }
+        format.xml  { render :xml => @customer.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+
+  # PUT /customers/1
+  # PUT /customers/1.xml
+  def update
+    @customer = Customer.find(params[:id])
+
+    respond_to do |format|
+      if @customer.update_attributes(params[:customer])
+        format.html { redirect_to(@customer, :notice => 'Customer was successfully updated.') }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @customer.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /customers/1
+  # DELETE /customers/1.xml
+  def destroy
+    @customer = Customer.find(params[:id])
+    @customer.destroy
+    respond_to do |format|
+      format.html { redirect_to(customers_url) }
+      format.xml  { head :ok }
+    end
+  end
+   
+  private
+  
+  def sort_column
+    Customer.column_names.include?(params[:sort]) ? params[:sort] : "custname"
+  end
+  
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
+  
+  def run_compid
+    @customer.company_id = Company.first.id
+  end
+    
+#   def run_custnumber
+#     y=Time.now.year+543
+#       if Customer.find(:all).empty?
+# 	@customer.cust_number = (y-2500).to_s+'/'+'0001'
+#       else if (y-2500) != (Customer.last.cust_number.split("/").first).to_i
+# 	      @customer.cust_number = (y-2500).to_s+'/'+'0001'
+# 	   else
+# 	      i = Customer.last.cust_number
+# 	      n = i.split("/").last.to_i+1 
+# 	      if n<10 
+# 		@customer.cust_number = (y-2500).to_s+'/'+'000'+n.to_s 
+# 	      else if n<100
+# 		    @customer.cust_number = (y-2500).to_s+'/'+'00'+n.to_s 
+# 		   else if n<1000 
+# 			  @customer.cust_number = (y-2500).to_s+'/'+'0'+n.to_s 
+# 			else if n<=9999
+# 			       @customer.cust_number = (y-2500).to_s+'/'+n.to_s 
+# 			     else 
+# 			       @customer.cust_number = 'Do not add customer !!!' 
+# 			     end  
+# 		        end
+# 		   end
+# 	      end 
+# 	    end
+#        end 
+#   end
+
+  
+end

@@ -1,0 +1,234 @@
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'quotations'  %>
+
+<table>
+  <tr>
+    <th width="350" class="bgdescgra"><center>Description</center></th>
+    <th class="bgdescgra"></th>
+    <th width="25" class="bgdescgra"><center>Quntity</center></th>
+    <th class="bgdescgra"></th>
+    <th width="100" class="bgdescgra"><center>Unit Price</center></th>
+    <th class="bgdescgra"></th>
+    <th class="bgdescgra"><center>Cost</th>
+    <th class="bgdescgra"></th>
+    <th class="bgdescgra"><center>Invoice Id.</th>
+    <% if @quotation.approve == nil && (request.url)["manageitem"] != nil %>
+    <th class="bgdescgra">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    <% else %>
+    <th class="bgdescgra"></th>
+    <% end %>
+  </tr>
+<% @comp = 0 %>
+<% @sum=0 %>
+<% @a = 0 %>
+<% @quotation.items.each do |item| %> 
+<tr>
+  <td width="350" class="bordertop " ><%= item.description %></td> <% @a=@a+1 %>
+  <td class="bordertop"></td>
+  <td width="25" class="bordertop "><center><%= item.quantity %></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop "><center><%= number_with_delimiter(item.unit_price.round(2), :delimiter => ',')  %></center></td>
+  <td class="bordertop">฿</td>
+  <td class="bordertop "><center><%= number_with_delimiter((item.quantity*item.unit_price).round(2), :delimiter => ',')  %></td>
+  <% @sum = @sum+(item.quantity*item.unit_price) %>
+  <td class="bordertop">฿</td>
+  <td class="bordertop"><center>
+  <% if item.invoice_id != nil %>
+    <% @invoice_number = 'I'+item.invoice.doc_number[0..1]+'/'+item.invoice.doc_number[2..5] %>
+    <%= link_to @invoice_number, invoice_path(item.invoice_id) %>
+  <% else %> -
+  <% end %>
+  </td>
+  <% if @quotation.approve == nil && (request.url)["manageitem"] != nil %>
+    <td class="bordertop">
+    <%= link_to del,[item.quotation ,item],
+	:confirm => 'Are you sure?',
+	:method => :delete %>
+    <%= link_to edit,edit_quotation_item_path(@quotation,item) %></td>
+  <% else %>
+    <td class="bordertop"> </td>
+  <% end %>
+  <% if item.invoice_id == nil || item.invoice_id == 0 %>
+      <% @comp = @comp+1  %>
+  <% end %>
+<% end %>
+</tr>
+
+
+
+
+<% if @quotation.tax %>
+<tr>
+  <td width="350" class="bordertop"></td>
+  <td class="bordertop"></td>
+  <td width="25" class="bordertop"><center></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop"><center><b>Subtotal</center></td>
+  <td class="bordertop"></td>
+  <td class="bordertop"><center><%= number_with_delimiter(@sum.round(2), :delimiter => ',') %></td>
+  <td class="bordertop">฿</td>
+  <td class="bordertop"><center></td>
+  <td class="bordertop"></td>
+</tr>
+<tr>
+  <td width="350" class="bordertop"></td>
+  <td class="bordertop"></td>
+  <td width="25" class="bordertop"><center></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop"><center><b>Tax 7.00% </center></td>
+  <td class="bordertop"></td>
+  <td class="bordertop"><center><%= number_with_delimiter(((@sum*7)/100).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop">฿</td>
+  <td class="bordertop"><center></td>
+  <td class="bordertop"></td>
+</tr>
+<tr>
+  <td width="350" class="bordertop bgdescgra"></td>
+  <td class="bordertop bgdescgra"></td>
+  <td width="25" class="bordertop bgdescgra"><center></center></td>
+  <td class="bordertop bgdescgra"></td>
+  <td width="100" class="bordertop bgdescgra"><center><b>Total </center></td>
+  <td class="bordertop bgdescgra"></td>
+  <td class="bordertop bgdescgra"><center><%= number_with_delimiter((@sum+((@sum*7)/100)).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop bgdescgra">฿</td>
+  <td class="bordertop bgdescgra"><center></td>
+  <td class="bordertop bgdescgra"></td>
+</tr>
+<% else %>
+<tr>
+  <td width="350" class="bordertop bgdescgra"></td>
+  <td class="bordertop bgdescgra"></td>
+  <td width="25" class="bordertop bgdescgra"><center></center></td>
+  <td class="bordertop bgdescgra"></td>
+  <td width="100" class="bordertop bgdescgra"><center><b>Total </center></td>
+  <td class="bordertop bgdescgra"></td>
+  <td class="bordertop bgdescgra"><center><%= number_with_delimiter(@sum.round(2), :delimiter => ',')  %></td>
+  <td class="bordertop bgdescgra">฿</td>
+  <td class="bordertop bgdescgra"><center></td>
+  <td class="bordertop bgdescgra"></td>
+</tr>
+<% end %>
+<% @comp %>
+</table>
+
+<% end %>
+
+<% if ((request.url).split('http://localhost:3000/').last).split('/').first == 'receipts'  %>
+
+<table >
+  <tr>
+    <th width="550" class="bgdescgra" ><center>Description</center></th>
+    <th class="bgdescgra"></th>
+    <th width="100" class="bgdescgra"><center>Quntity</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Unit Price</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Cost</th>
+    <th class="bgdescgra"></th>
+    <% if (request.url)['manageitem'] != nil %>
+      <th width="100" class="bgdescgra"></th>
+    <% end %>
+ <!--   <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>-->
+  </tr>
+<% @comp = 0 %>
+<% @sum=0 %>
+<% @receipt.items.each do |item| %> 
+<tr>
+  <td width="550" class="bordertop"><%= item.description %></td>
+  <td class="bordertop"></td>
+  <td width="100 " class="bordertop"><center><%= item.quantity %></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop"><center><%= number_with_delimiter( item.unit_price.round(2), :delimiter => ',') %></center></td>
+  <td class="bordertop">฿</td>
+  <td width="100" class="bordertop"><center><%= number_with_delimiter((item.quantity*item.unit_price).round(2), :delimiter => ',')  %></td>
+  <% @sum = @sum+(item.quantity*item.unit_price) %>
+  <td class="bordertop">฿</td>
+
+  <% if (request.url)["manageitem"] != nil %>
+  <% if @receipt.cancel==false  && @receipt.complete==false %>
+    <td class="bordertop">
+    <%= link_to del,[item.receipt ,item],
+	:confirm => 'Are you sure?',
+	:method => :delete %>
+    <%= link_to edit,edit_receipt_item_path(@receipt,item) %></td>
+  <% else %>
+    <td> </td>
+  <% end %>
+  <% end %>
+
+  <% if item.invoice_id == nil || item.invoice_id == 0 %>
+      <% @comp = @comp+1  %>
+  <% end %>
+
+<% end %>
+</tr>
+<% if @receipt.tax %>
+<tr>
+  <td width="350" class="bordertop"></td>
+  <td class="bordertop"></td>
+  <td width="25" class="bordertop"><center></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop"><center><b>Subtotal</center></td>
+  <td class="bordertop"></td>
+  <td class="bordertop"><center><%= number_with_delimiter(@sum.round(2), :delimiter => ',')  %></td>
+  <td class="bordertop">฿</td>
+  <% if (request.url)["manageitem"] != nil %>
+    <td class="bordertop">    </td>
+  <% else %>
+    <td> </td>
+  <% end %>
+ 
+
+</tr>
+<tr>
+  <td width="350" class="bordertop"></td>
+  <td class="bordertop"></td>
+  <td width="25" class="bordertop"><center></center></td>
+  <td class="bordertop"></td>
+  <td width="100" class="bordertop"><center><b>Tax 7.00% </center></td>
+  <td class="bordertop"></td>
+  <td class="bordertop"><center><%= number_with_delimiter(((@sum*7)/100).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop">฿</td>
+  <% if (request.url)["manageitem"] != nil %>
+    <td class="bordertop">    </td>
+  <% else %>
+    <td> </td>
+  <% end %>
+</tr>
+<tr>
+  <td width="350" class="bgdescgra"></td>
+  <td class="bgdescgra"></td>
+  <td width="25" class="bgdescgra"><center></center></td>
+  <td class="bgdescgra"></td>
+  <td width="100" class="bgdescgra"><center><b>Total </center></td>
+  <td class="bgdescgra"></td>
+  <td class="bgdescgra"><center><%= number_with_delimiter((@sum+((@sum*7)/100)).round(2), :delimiter => ',')  %></td>
+  <td class="bgdescgra">฿</td>
+  <% if (request.url)["manageitem"] != nil %>
+    <td class="bgdescgra">    </td>
+  <% else %>
+    <td> </td>
+  <% end %>
+</tr>
+<% else %>
+<tr>
+  <td width="350" class="bgdescgra"></td>
+  <td class="bgdescgra"></td>
+  <td width="25" class="bgdescgra"><center></center></td>
+  <td class="bgdescgra"></td>
+  <td width="100" class="bgdescgra"><center><b>Total </center></td>
+  <td class="bgdescgra"></td>
+  <td class="bgdescgra"><center><%= number_with_delimiter(@sum.round(2), :delimiter => ',') %></td>
+  <td class="bgdescgra">฿</td>
+  <% if (request.url)["manageitem"] != nil %>
+    <td class="bgdescgra">    </td>
+  <% else %>
+    <td> </td>
+  <% end %>
+</tr>
+<% end %>
+<% @comp %>
+</table>
+
+<% end %>
+
+

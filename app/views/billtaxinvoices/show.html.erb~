@@ -1,0 +1,92 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>ใบเสร็จรับเงิน / ใบกำกับภาษี</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>NO. : </b></td>
+      <td>BT<%= @billtaxinvoice.doc_number[0..1] %>/<%= @billtaxinvoice.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>Customer : </b></td>
+      <td><%= @billtaxinvoice.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>Title : </b></td>
+      <td><%= @billtaxinvoice.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @billtaxinvoice.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>Deliver: </b></td>
+      <td>
+	    <% if @billtaxinvoice.complete  %>
+	      <font color=green ><%= 'ส่งเอกสารให้ลูกค้าเรียบร้อย' %></font>
+	    <% else %>
+	      <font color=red><%= 'ยังไม่ส่งเอกสารให้ลูกค้า' %></font>
+	    <% end %>
+	  
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>Status : </b></td>
+      <td><% if @billtaxinvoice.cancel  %>
+	    <%= 'ยกเลิก'%><% @billtaxinvoice.cancel %>
+	  <% else %><%= 'ใช้งาน' %><% @billtaxinvoice.cancel %>
+	  <% end %>
+	  <% @billtaxinvoice.cancel %>
+      </td>
+    </p>
+  </tr>
+</font>
+</table>
+
+<!-- ######################################################### -->
+   
+<!-- ######################################################### -->
+<!-- รายการ -->
+
+
+<!-- เพิ่มรายการ -->
+<%= render :partial => "items/itembilltaxinvoice"%>
+<!-- ######################################################### -->
+
+
+<!--  link_to "ออกใบเสร็จรับเงิน",nextdoc_billtaxinvoice_path(@billtaxinvoice) %> -->
+
+
+
+<!-- ######################################################### -->
+
+<% if @billtaxinvoice.cancel %> <td><%= edit_non %></td>
+<% else %><td><%= link_to edit, edit_billtaxinvoice_path(@billtaxinvoice) %></td>
+<% end %>
+
+<%= link_to back, billtaxinvoices_path %>
+
+<center>
+<%= printicon %> :: 
+<%= link_to printr, printred_billtaxinvoice_path(@billtaxinvoice) %>
+<%= link_to printb, printblue_billtaxinvoice_path(@billtaxinvoice) %>
+<%= link_to printw, printwhite_billtaxinvoice_path(@billtaxinvoice) %>
+</center>

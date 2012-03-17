@@ -1,0 +1,7 @@
+<footer>
+  <nav class="round">
+    <ul>
+	<li><%= "SMEs BILLING AND INVOICE" %></li>
+    </ul>
+  </nav>
+</footer>

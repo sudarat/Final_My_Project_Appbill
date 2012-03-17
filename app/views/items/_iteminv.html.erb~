@@ -1,0 +1,38 @@
+<% @i =0 %>
+<table >
+  <tr>
+    <th width="550" class="bgdescgra"><center>Description</center></th>
+    <th class="bgdescgra"></th>
+    <th width="100" class="bgdescgra"><center>Quntity</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Unit Price</center></th>
+    <th class="bgdescgra"></th>
+    <th width="50" class="bgdescgra"></th>
+  </tr>
+<% @inv=0 %>
+
+<% @invoice.items.each do |iteminv| %> 
+<tr><% if iteminv.invoice_id == @invoice.id %>
+  <td width="550" class="bordertop "><%= iteminv.description %></td><% @i = @i+1%>
+  <td class="bordertop "></td>
+  <td width="100" class="bordertop "><center><%= iteminv.quantity %></center></td>
+  <td class="bordertop "></td>
+  <td width="150" class="bordertop "><center><%= number_with_delimiter(iteminv.unit_price.round(2), :delimiter => ',')  %></center></td>
+  <td class="bordertop ">฿</td>
+  <td class="bordertop "><% iteminv.invoice_id %>
+<!--   < link_to 'cancle', cancleiteminvoice_quotation_item_path(@quotation,iteminv.id)%> -->
+  <%= button_to 'ยกเลิก',cancleiteminvoice_quotation_item_path(@quotation,iteminv.id) ,:method => :get , :class=>"right"%></td>
+  <% end %>
+
+  </tr>
+  
+  </tr>
+
+
+  <% @inv = @inv+1 %>
+<% end %>
+
+</table>
+<% if @i==0 %>
+  <center><font size=5 color=red>EMPTY ITEM !!</font></center>
+<% end %>

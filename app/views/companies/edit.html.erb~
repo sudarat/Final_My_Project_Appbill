@@ -1,0 +1,9 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<h1>Editing company information.</h1>
+
+<%= render 'form' %>
+
+<%= link_to back, @company %>

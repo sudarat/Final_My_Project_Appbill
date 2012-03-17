@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  custname: MyString
+  custadddress: MyText
+  custtel: MyString
+  custcontact_name: MyString
+  custcontact_surname: MyString
+  custcontact_tel: MyString
+  custcontact_email: MyString
+
+two:
+  custname: MyString
+  custadddress: MyText
+  custtel: MyString
+  custcontact_name: MyString
+  custcontact_surname: MyString
+  custcontact_tel: MyString
+  custcontact_email: MyString

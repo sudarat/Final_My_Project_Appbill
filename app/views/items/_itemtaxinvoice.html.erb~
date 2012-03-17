@@ -1,0 +1,107 @@
+
+<table >
+  <tr>
+    <th width="550" class="bgdescgra"><center>Description</center></th>
+    <th class="bgdescgra"></th>
+    <th width="100" class="bgdescgra"><center>Quntity</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Unit Price</center></th>
+    <th class="bgdescgra"></th>
+    <th width="150" class="bgdescgra"><center>Cost</center></th>
+    <th class="bgdescgra"></th>
+<!--    <th>Inv Id.</th>-->
+  </tr>
+<% @sum = 0%>
+<% @taxinvoice.items.each do |iteminvshow| %> 
+<tr><% if iteminvshow.taxinvoice_id == @taxinvoice.id %>
+  <td width="550" class="bordertop "><%= iteminvshow.description %></td>
+  <td class="bordertop "></td>
+  <td width="100" class="bordertop "><center><%= iteminvshow.quantity %></center></td>
+  <td class="bordertop "></td>
+  <td width="150" class="bordertop "><center><%= number_with_delimiter(iteminvshow.unit_price.round(2), :delimiter => ',')  %></center></td>
+  <td class="bordertop ">฿</td>
+  <td width="150" class="bordertop "><center><%= number_with_delimiter((iteminvshow.unit_price*iteminvshow.quantity).round(2), :delimiter => ',')  %></center></td>
+  <% @sum = @sum+(iteminvshow.quantity*iteminvshow.unit_price) %>
+ <td>฿</td>
+ <!--  <td><%= iteminvshow.invoice_id %></td>-->
+<% end %>
+<% end %></tr>
+</tr>
+<% if @taxinvoice.tax %>
+<tr>
+  <td width="350" class="bordertop "></td>
+  <td class="bordertop "></td>
+  <td width="25" class="bordertop "><center></center></td>
+  <td class="bordertop "></td>
+  <td width="150" class="bordertop "><center><b>Subtotal</b></center></td>
+  <td class="bordertop "></td>
+  <td class="bordertop "><center><%= number_with_delimiter(@sum.round(2), :delimiter => ',')%></td>
+  <td class="bordertop ">฿</td>
+<!--   <td class="bordertop "><center></td> -->
+<!--   <td class="bordertop "></td> -->
+</tr>
+<tr>
+  <td width="350" class="bordertop "></td>
+  <td class="bordertop "></td>
+  <td width="25" class="bordertop "><center></center></td>
+  <td class="bordertop "></td>
+  <td width="150" class="bordertop "><center><b>Tax 7.00%</b> </center></td>
+  <td class="bordertop "></td>
+  <td class="bordertop "><center><%= number_with_delimiter(((@sum*7)/100).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop ">฿</td>
+<!--   <td class="bordertop "><center></td> -->
+<!--   <td class="bordertop "></td> -->
+</tr>
+<tr>
+  <td width="350" class="bordertop "></td>
+  <td class="bordertop "></td>
+  <td width="25" class="bordertop "><center></center></td>
+  <td class="bordertop "></td>
+  <td width="200" class="bordertop "><center><b>Withholding Tax 3.00%</b> </center></td>
+  <td class="bordertop "></td>
+  <td class="bordertop "><center><%= number_with_delimiter(((@sum*3)/100).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop ">฿</td>
+<!--  <td class="bordertop "><center></td>
+  <td class="bordertop "></td>-->
+</tr>
+<tr>
+  <td width="350" class="bgdescgra"></td>
+  <td class="bgdescgra"></td>
+  <td width="25" class="bgdescgra"><center></center></td>
+  <td class="bgdescgra"></td>
+  <td width="150" class="bgdescgra"><center><b>Total</b></center></td>
+  <td class="bgdescgra"></td>
+  <td class="bgdescgra"><center><%= number_with_delimiter((@sum+((@sum*7)/100))-(((@sum*3)/100)).round(2), :delimiter => ',')  %></td>
+  <td class="bgdescgra">฿</td>
+ <!-- <td class="bgdescgra"><center></td>
+  <td class="bgdescgra"></td>-->
+</tr>
+<% else %>
+<tr>
+  <td width="350" class="bordertop "></td>
+  <td class="bordertop "></td>
+  <td width="25" class="bordertop "><center></center></td>
+  <td class="bordertop "></td>
+  <td width="200" class="bordertop "><center><b>Withholding Tax 3.00%</b> </center></td>
+  <td class="bordertop "></td>
+  <td class="bordertop "><center><%= number_with_delimiter(((@sum*3)/100).round(2), :delimiter => ',')  %></td>
+  <td class="bordertop ">฿</td>
+<!--  <td class="bordertop "><center></td>
+  <td class="bordertop "></td>-->
+</tr>
+<tr>
+  <td width="350" class="bgdescgra"></td>
+  <td class="bgdescgra"></td>
+  <td width="25" class="bgdescgra"><center></center></td>
+  <td class="bgdescgra"></td>
+  <td width="150" class="bgdescgra"><center><b>Total</b></center></td>
+  <td class="bgdescgra"></td>
+  <td class="bgdescgra"><center><%= number_with_delimiter((@sum-((@sum*3)/100)).round(2), :delimiter => ',')  %></td>
+  <td class="bgdescgra">฿</td>
+<!--  <td class="bgdescgra"><center></td>
+  <td class="bgdescgra"></td>-->
+</tr>
+<% end %>
+
+</table>
+

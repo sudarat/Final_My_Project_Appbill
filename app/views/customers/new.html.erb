@@ -1,0 +1,10 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<h1>สร้างข้อมูลลูกค้า</h1>
+
+<%= render 'form' %>
+
+
+<%= link_to back, cookies[:back] %>

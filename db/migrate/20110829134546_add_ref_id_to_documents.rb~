@@ -1,0 +1,9 @@
+class AddRefIdToDocuments < ActiveRecord::Migration
+  def self.up
+    add_column :documents, :ref_id, :string
+  end
+
+  def self.down
+    remove_column :documents, :ref_id
+  end
+end

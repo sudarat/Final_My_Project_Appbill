@@ -1,0 +1,121 @@
+<!-- <meta content="text/html; charset=UTF-8" http-equiv="content-type"> -->
+
+<html>
+<table width="100%" height="100%" border = "0" align =center>
+<THEAD>
+  <tr height=30><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc " >
+    <tr>
+      <td width="38%" valign="top"><%= image_tag @company.complogo.url(:print) %></td> 
+      <td width="50%" valign="botton"><p style="margin-top : 1.5em;"><b><font size=4>ใบเสนอราคา</font></p></b></td> 
+    </tr>
+    </table>
+  </td></tr>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compname%></font></td>
+    <td valign="top"><font size=3><b>No: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    <%= @quotation.doc_number%><font color="FFFFFF"></font></font></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3><%= @company.compaddress%></font></td>
+    <td valign="top"><font size=3><b>วันที่:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    <%= Time.now.day%>/<%= "%02d" % Time.now.month%>/<%= Time.now.year+543 %></font></td>
+  </tr>
+  <tr height=25>
+    <td valign="top"><font size=3>
+      ถ.<%= @company.compstreet%>
+      ต.<%= @company.compsub_district%>
+      อ.<%= @company.compdistrict%>
+      จ.<%= @company.province.province_name%>
+    <br /></font></td>
+    <td valign="top" ><font size=3><b>เลขประจำตัวผู้เสียภาษี:</b> <%= @company.comptax %></font></td>
+  </tr>
+</THEAD>
+<TBODY>
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr height=25><td colspan=3 valign="middle"><font size=3>PROJECT TITLE : <%= @quotation.title %><br /></font></td></tr>
+  <tr height=25><td colspan=3 valign="middle"><font size=3>DETAIL : 
+    <% @quotation.detail.split(/<p>|<\/p>|\r\n/).each do |condition| %>
+      <%= raw(condition) %>
+    <% end %>
+  <br /></font></td></tr>
+<!--   <tr height=25><td colspan=3 valign="middle"><font size=3>INVOICE NUMBER : <%= @quotation.id%>-<%= (@quotation.created_at.year)+543 %><br /></font></td></tr> -->
+  <tr height=25><td colspan=3 valign="middle"><font size=3>TERMS : <%= @quotation.terms %> Days<br /></font></td></tr>
+
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+  <tr><td colspan=3 valign="top">
+    <table border=0 width ="100%" class="tdesc ">
+    <tr align="center" class=" borderbottom" valign=middle height=25>
+      <td class="borderright bgdescquo" width="55%"><font size=2><b>Description</b></td> 
+      <td class="borderright bgdescquo" width="15%"><font size=2><b>Quantity</b></td> 
+      <td class="borderright bgdescquo" width="15%"><font size=2><b>Unit Price</b></td> 
+      <td class="bgdescquo"><font size=2 width="15%"><b>Cost</b></td></tr>
+    <font size=2><%= raw(@quotation.details_html) %></font>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2></td> 
+      <td class="borderright " align="center"><font size=2>Subtotal</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= @quotation.subtotal_html %></font></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 ></td> 
+      <td class="borderright" align="center"><font size=2>Tax 7.00%</font></td> 
+      <td align= right class="borderleft"><font size=2><img src=/images/print/b.jpg  align=left><%= @quotation.tax_html %></td>
+    </tr>
+
+    <tr class="bordertop" valign=middle height=25>
+      <td colspan=2 class="bgdescquo"></td>
+      <td class="borderright bgdescquo" align="center"><font size=2><b>Total</b></font></td> 
+      <td align= right class="bgdescquo"><font size=2 ><img src=/images/print/bb.jpg  align=left><b><right><%= @quotation.total_html%></b></td> 
+    </tr>
+    <tr><td colspan=3 align="center" valign="bottom" height="10px">&nbsp;</td></tr>
+
+    
+    <% if (@quotation.condition != "")%>
+    <tr valign="bottom"><td colspan=4><font size=2>เงื่อนไขการรับประกัน<br />
+
+    <% @quotation.condition.split(/<p>|<\/p>|\r\n/).each do |condition| %>
+      <%= raw(condition) %>
+    <% end %>
+
+
+    <br /><br />
+    </font></td></tr>
+    <% end %>
+  </table>
+  </td></tr>
+
+
+
+  
+</TBODY>
+<TFOOT>
+  <tr><td colspan=3 valign="top">
+    <table width="100%" align="center" class="tdesc">
+      <tr valign=top align=center class="bordertop borderbottom">
+	<td width = "50%" class="borderright"><font size=2><b>สำหรับลูกค้า</b></font></td> 
+	<td ><font size=2><b>ผู้เสนอราคา</b></font></td>
+      </tr>
+      <tr align = center>
+	<td class="borderbottom borderright" valign="bottom"><font size=2>วันที่  ..../..../........</font></td> 
+	<td class="borderbottom" >
+	  <font size=2>ขอแสดงความนับถือ
+	  <br /><br /><br /><br /><br /><br />
+	  <%= @company.compauthor_name %></font>
+	  <br />
+	  <font size=1.5><%= @company.compauthor_position %>
+	</td></tr>
+    </table>
+  </td>
+</font>
+</TFOOT>
+
+<!-- <%= link_to "Download (PDF)",print_quotation_path(@quotation,:format => "pdf") %> -->
+
+</html>

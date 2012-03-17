@@ -1,0 +1,163 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+
+<h1 class="center">ใบเสนอราคา</h1>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>เลขที่ : </b></td>
+      <td>Q<%= @quotation.doc_number[0..1] %>/<%= @quotation.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ลูกค้า : </b></td>
+      <td><%= @quotation.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ชื่องาน : </b></td>
+      <td><%= @quotation.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>รายละเอียด : </b></td>
+      <td><%= raw @quotation.detail %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ระยอเวลาดำเนินงาน : </b></td>
+      <td><%= @quotation.terms %> <b>Days</b></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>เงื่อนไขการรับประกัน : </b></td>
+      <td><%= raw @quotation.condition %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>วันสิ้นสุดการเสนอราคา : </b></td>
+      <td><%= @quotation.doc_date.strftime("%Y-%m-%d") %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @quotation.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ผลการอนุมัติ : </b></td>
+      <td><% if @quotation.approve  %>
+	    <%= 'อนุมัติ'%>
+	  <% else if @quotation.approve == nil %>
+		    <%= 'รอผล' %>
+		  <% else %>
+		    <%= 'ไม่อนุมัติ' %>
+		  <% end %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>เอกสารถัดไป : </b></td>
+      <td><% if @quotation.approve  %>
+	    <% if @quotation.complete  %>
+	      <font color=green ><%= 'ออกใบส่งของครบ' %></font>
+	    <% else %>
+	      <font color=red><%= 'ออกใบส่งของไม่ครบ' %></font>
+	    <% end %>
+	  <% else if @quotation.approve == nil%><%= '-' %>
+		  <% else %><%= 'ไม่อนุมัติ' %>
+	  <% end %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+
+  <% if @quotation.cancel == false && @quotation.complete == false && @quotation.approve == true %>
+ <tr>
+   <td></td>
+    <td>
+
+<!-- เช็คถ้ามีรายการที่ยังไม่ได้ออกใบส่งของ ให้แสดง link -->
+	<% if @quotation.approve && @quotation.complete == false %>
+	  <%= link_to nexti, new_invoice_path %>
+	<% end %>
+    </td>
+  </tr>
+  <%end%>
+
+  <tr>
+    <p>
+      <td><b>สถานะ : </b></td>
+      <td><% if @quotation.cancel  %>
+	    <%= 'ยกเลิก'%>
+	  <% else %><%= 'ใช้งาน' %>
+	  <% end %>
+	  <% @quotation.cancel %>
+      </td>
+    </p>
+  </tr>
+
+<% if @quotation.paper.url != '/papers/original/missing.png' %>
+
+  <tr>
+    <p>
+      <td><b>เอกสารเพิ่มเติม :</b></td>
+      <td><%= @quotation.paper_file_name %><br/><%= link_to 'Download', @quotation.paper.url %></td>
+    </p>
+  </tr>
+<% end %>
+</font>
+</table>
+
+<!-- <h3>Items</h3> -->
+<!--  if @quotation.items.length != 0%> -->
+  <%= render :partial => "items/item" %>
+  <% if @quotation.approve == nil && @quotation.cancel != true %>
+      <%= button_to 'เพิ่มรายการ',new_quotation_item_path(@quotation) ,:method => :get %>
+  <% end %>
+  
+<!--  else %> button_to 'Add item',new_quotation_item_path(@quotation) ,:method => :get %> -->
+<!--  end %> -->
+<br />
+<% if @a==0 %>
+ <center><font size=3 color=red>ไม่มีรายการในใบเสนอราคานี้ !!</font></center>
+<% end %>
+<br/>
+<% @comp %>
+<% flash[:notice] = "quotation was successfully updated." %>
+<% if @comp==0%>
+  <%= button_to 'ลบใบเสนอราคา',@quotation ,:confirm => 'ลบใบเสนอราคา ?',:method => :delete ,:class=>"center"%>
+<!--   <%= button_to 'OK',@quotation ,:confirm => 'No item for quotation , Quotations will be deleted ?',:method => :delete ,:class=>"center"%> -->
+<% else %>
+<table>
+  <tr>
+    <% if cookies[:create] == '1' %>
+      <td width="50%"><%= button_to 'ลบใบเสนอราคา',@quotation ,:confirm => 'ลบใบเสนอราคา ?',:method => :delete ,:class=>"right"%></td>
+    <% else %>
+      <td width="46%"></td>
+    <% end %>
+    <td><%= button_to 'เสร็จสิ้น',@quotation ,:method => :get %></td>
+ </tr>
+</table> 
+<% end %>
+<% @quotation.complete %>
+
+  <%= link_to back, request.referer %>

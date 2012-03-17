@@ -1,0 +1,142 @@
+<% flash .each do |key, value| %>
+  <%= content_tag(:div, value, :class => "flash #{key}") %> 
+<% end %>
+
+<center><h1>ใบส่งของ</h1></center>
+
+<table class="show_quota" > 
+  <tr>
+    <p>
+      <td width=200px><b>เลขที่ : </b></td>
+      <td>I<%= @invoice.doc_number[0..1] %>/<%= @invoice.doc_number[2..5] %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ลูกค้า : </b></td>
+      <td><%= @invoice.customer.custname %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>ชื่องาน : </b></td>
+      <td><%= @invoice.title %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>วันครบกำหนดจ่ายเงิน : </b></td>
+      <td><%= @invoice.doc_date.strftime("%Y-%m-%d") %></td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>อัตราภาษี : </b></td>
+      <td><% if @invoice.tax  %>
+	    <%= 'ภาษี 7%'%>
+	  <% else %>
+	    <%= 'ไม่คิดภาษี' %>
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>สถานะจ่ายเงิน : </b></td>
+      <td><% if @invoice.approve  %>
+	    <%= 'จ่ายเงินแล้ว'%>
+	  <% else %><%= 'ยังไม่จ่ายเงิน' %>
+	  <% end %>
+	  <% @invoice.approve %>
+      </td>
+    </p>
+  </tr>
+  <tr>
+    <p>
+      <td><b>เอกสารถัดไป : </b></td>
+      <td><% if @invoice.approve  %>
+	    <% if @invoice.complete  %>
+	      <font color=green ><%= 'ออกใบเสร็จรับเงินเรียบร้อย' %></font>
+	    <% else %>
+	      <font color=red><%= 'ยังไม่ออกใบเสร็จรับเงิน' %></font>
+	    <% end %>
+	  <% else %>-
+	  <% end %>
+      </td>
+    </p>
+  </tr>
+
+  <% if @invoice.cancel == false && @invoice.complete == false && @invoice.approve == true %>
+ <tr>
+   <td></td>
+    <td>
+
+<!-- เช็คถ้ามีรายการที่ยังไม่ได้ออกใบส่งของ ให้แสดง link -->
+	<% if @invoice.approve && @invoice.complete == false %>
+	  <%= link_to nextb, changedoc_invoice_path(@invoice) %>
+	<% end %>
+    </td>
+  </tr>
+  <%end%>
+  <tr>
+    <p>
+      <td><b>สถานะ : </b></td>
+      <td><% if @invoice.cancel  %>
+	    <%= 'ยกเลิก'%><% @invoice.cancel %>
+	  <% else %><%= 'ใช้งาน' %><% @invoice.cancel %>
+	  <% end %>
+	  <% @invoice.cancel %>
+      </td>
+    </p>
+  </tr>
+</font>
+</table>
+
+<%= render :partial => "items/iteminv"%>
+
+<br />
+<!-- <%= cookies[:invoice_id] = @invoice.id %>  -->
+<hr style="height:5px" />
+<font size=4><U><center>เพิ่มรายการ</center></U></font>
+<%= render :partial => "items/itemall" %>
+
+
+<!-- ######################################################### -->
+ <!-- COMPLETE -->
+<!-- เอาไว้เก็บค่าเฉยๆ เช็ค item แต่ละ item ของใบเสนอราคา ถ้าทุก item มี invoice id ก็จะ Complete -->
+<!-- if @comp == 0 && @quotation.approve %>
+   @quotation.complete = 'true' %> 
+   @quotation.update_attributes(params[:quotation]) %>
+ end %>
+ if @comp != 0 && @quotation.approve%>
+   @quotation.complete = 'false' %> 
+   @quotation.update_attributes(params[:quotation]) %>
+ end %>-->
+
+
+<% if @comp == 0 && @quotation.approve %>
+  <% if @quotation.complete == false%>
+    <% @quotation.complete = true %> 
+    <% @quotation.update_attributes(params[:quotation]) %>
+  <% end %>
+<% end %>
+<% if @comp != 0 && @quotation.approve%>
+  <% if @quotation.complete == true %>
+    <% @quotation.complete = false %> 
+    <% @quotation.update_attributes(params[:quotation]) %>
+  <% end %>
+<% end %>
+
+<br/>
+<% if @inv==0 %>
+  <%= button_to 'Cancel',@invoice ,:confirm => ' ลบใบส่งของ ?',:method => :delete ,:class=>"center"%>
+<% else %>
+  <%= button_to 'Complete',@invoice ,:method => :get ,:class=>"center"%>
+<% end %>
+
+<% @inv %>
+<% @quotation.complete %> 
+
+<%= link_to back, request.referer %>
+<% flash[:notice] = "Invoice was successfully updated." %>
+<!--<%= button_to 'Complete',@invoice ,:method => :get ,:class=>"center"%>-->
