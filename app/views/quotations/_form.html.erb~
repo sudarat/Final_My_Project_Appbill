@@ -105,7 +105,7 @@
    
 <!-- เอกสารเพิ่มเติม -->
      
-    <%= f.input :paper , :label => "เอกสารเพิ่มเติม ",:hint => paper_show %>
+    <%= f.input :paper , :label => "เอกสารเพิ่มเติม ",:hint => paper_show ,:hint => 'เฉพาะไฟล์นามสกุล PDF เท่านั้น ที่มีขนาดเล็กกว่า 20 MB เท่านั้น' %>
   <% end %>
   <%= f.buttons %>
 <% end %>

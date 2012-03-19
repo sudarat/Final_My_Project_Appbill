@@ -47,7 +47,7 @@
 
 <br /><font color="black" >
   <%= f.inputs do %>
-    <b><%= "เลขที่" %></b><font style="margin-left : 16.3em; ">R<%= @receipt.doc_number[0..1] %>/<%= @receipt.doc_number[2..5] %><br />
+    <b><%= "เลขที่" %></b><font style="margin-left : 16.3em; ">R<%= @receipt.doc_number[0..1] %>/<%= @receipt.doc_number[2..5] %><br /><br/>
    <% if request.referer.split('http://localhost:3000/').second.split('/').first == 'customers' && request.referer != 'http://localhost:3000/customers' && request.referer != 'http://localhost:3000/customers/new'%>
       <% @customer=Customer.last %>
       <% @receipt.customer_id = @customer.id %>

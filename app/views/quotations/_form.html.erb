@@ -52,10 +52,10 @@
       <% @quotation.customer_id = @customer.id %>
       <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer , :selected => @customer.id  %><% cookies.delete :back_doc %>
     <% else %>
-      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'กรุณาเลือกลูกค้า', :hint=>new_customer %>
     <% end %>
     <% else %>
-      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'กรุณาเลือกลูกค้า', :hint=>new_customer %>
     <% end %>
 
      

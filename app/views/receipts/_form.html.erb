@@ -51,9 +51,9 @@
    <% if request.referer.split('http://localhost:3000/').second.split('/').first == 'customers' && request.referer != 'http://localhost:3000/customers' && request.referer != 'http://localhost:3000/customers/new'%>
       <% @customer=Customer.last %>
       <% @receipt.customer_id = @customer.id %>
-      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer , :selected => @customer.id  %><% cookies.delete :back_doc %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'กรุณาเลือกลูกค้า', :hint=>new_customer , :selected => @customer.id  %><% cookies.delete :back_doc %>
     <% else %>
-      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'Change Customer', :hint=>new_customer %>
+      <%= f.input :customer , :label => "ลูกค้า ", :as => :select , :member_label => :custname , :include_blank => 'กรุณาเลือกลูกค้า', :hint=>new_customer %>
     <% end %>
     <font style="font-size : 0.85em;"><%= f.input :tax, :as => :radio, :label => "อัตราภาษี", :collection => {"ภาษี 7%" => true, "ไม่คิดภาษี" =>  false} %></font>
 <!--    <%= f.check_box :approve %> อนุมัติ -->
