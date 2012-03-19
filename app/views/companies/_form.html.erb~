@@ -26,7 +26,7 @@
     <%= f.input :compauthor_name  , :label => 'ชื่อผู้อำนาจอนุมัติ ' ,:hint => 'Ex. นายธุรกิจ งานก้าวหน้า' %>
     <%= f.input :compauthor_position  , :label => 'ตำแหน่ง ',:hint => 'Ex. Chief Software Architect' %>
     <%= f.input :compauthor_tel  , :label => 'เบอร์โทรศัพท์ ',:hint => 'Ex. 02-9310022,084-7797784' %>
-    <%= f.input :compauthor_signature  , :label => 'ลายเซ็นต์ '%>
+    <%= f.input :compauthor_signature  , :label => 'ลายเซ็นต์ ' ,:hint => 'เฉพาะไฟล์นามสกุล JPG หรือ PNG ที่มีขนาดใหญ่กว่า 110 x 110 px เท่านั้น'%>
     <% if @company.compauthor_signature.url != nil %>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
