@@ -7,7 +7,7 @@ class InvoicesController < ApplicationController
     @invoices.each do |invoice|
       if invoice.cancel==false && invoice.approve == false
 	if Date.today.strftime("%d-%m-%Y")==invoice.doc_date.strftime("%d-%m-%Y")
-	  invoice.approve=false
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -27,7 +27,7 @@ class InvoicesController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month>invoice.doc_date.month
-	  invoice.approve=false
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -47,7 +47,7 @@ class InvoicesController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month==invoice.doc_date.month && Date.today.day>invoice.doc_date.day
-	  invoice.approve=false
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -144,7 +144,7 @@ class InvoicesController < ApplicationController
     default_cancel
     @invoice.tax = @quotation.tax
     @invoice.doc_date= Date.today.tomorrow
-    @invoice.approve=nil
+    @invoice.approve=false
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @invoice }
@@ -167,7 +167,7 @@ class InvoicesController < ApplicationController
     @invoice.title = @quotation.title
     @invoice.customer = @quotation.customer
     @invoice.complete = false
-    @invoice.approve=nil
+    @invoice.approve=false
     @invoice.tax = @quotation.tax
     default_cancel
     run_docnumber

@@ -16,6 +16,7 @@ class DocumentsController < ApplicationController
       else if document.type=="Invoice"
 	if document.cancel==false && document.approve == false
 	if Date.today.strftime("%d-%m-%Y")==document.doc_date.strftime("%d-%m-%Y")
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -36,6 +37,7 @@ class DocumentsController < ApplicationController
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month
 # 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -56,6 +58,7 @@ class DocumentsController < ApplicationController
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day
 # 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -239,6 +242,7 @@ class DocumentsController < ApplicationController
       else if document.type=="Invoice"
 	if document.cancel==false && document.approve == false
 	if Date.today.strftime("%d-%m-%Y")==document.doc_date.strftime("%d-%m-%Y")
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -258,7 +262,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -278,7 +283,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -381,6 +387,7 @@ class DocumentsController < ApplicationController
       else if document.type=="Invoice"
 	if document.cancel==false && document.approve == false
 	if Date.today.strftime("%d-%m-%Y")==document.doc_date.strftime("%d-%m-%Y")
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -400,7 +407,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -420,7 +428,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -523,6 +532,7 @@ class DocumentsController < ApplicationController
       else if document.type=="Invoice"
 	if document.cancel==false && document.approve == false
 	if Date.today.strftime("%d-%m-%Y")==document.doc_date.strftime("%d-%m-%Y")
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -542,7 +552,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month>document.doc_date.month
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|
@@ -562,7 +573,8 @@ class DocumentsController < ApplicationController
 	  @quotation.update_attributes(params[:quotation])
 	end
 	if Date.today.year==document.doc_date.year && Date.today.month==document.doc_date.month && Date.today.day>document.doc_date.day
-	  document.doc_date=Date.today
+# 	  document.doc_date=Date.today
+	  document.approve=nil
 	  document.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => document.id })
    	  @items.each do |item|

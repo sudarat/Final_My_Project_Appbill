@@ -295,6 +295,7 @@ class InvoicesController < ApplicationController
     @invoices.each do |invoice|
       if invoice.cancel==false && invoice.approve == false
 	if Date.today.strftime("%d-%m-%Y")==invoice.doc_date.strftime("%d-%m-%Y")
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -314,7 +315,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month>invoice.doc_date.month
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -334,7 +336,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month==invoice.doc_date.month && Date.today.day>invoice.doc_date.day
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -405,6 +408,7 @@ class InvoicesController < ApplicationController
     @invoices.each do |invoice|
       if invoice.cancel==false && invoice.approve == false
 	if Date.today.strftime("%d-%m-%Y")==invoice.doc_date.strftime("%d-%m-%Y")
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -424,7 +428,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month>invoice.doc_date.month
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -444,7 +449,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month==invoice.doc_date.month && Date.today.day>invoice.doc_date.day
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -515,6 +521,7 @@ class InvoicesController < ApplicationController
     @invoices.each do |invoice|
       if invoice.cancel==false && invoice.approve == false
 	if Date.today.strftime("%d-%m-%Y")==invoice.doc_date.strftime("%d-%m-%Y")
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -534,7 +541,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month>invoice.doc_date.month
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
@@ -554,7 +562,8 @@ class InvoicesController < ApplicationController
 	  invoice.update_attributes(params[invoice])
 	end
 	if Date.today.year==invoice.doc_date.year && Date.today.month==invoice.doc_date.month && Date.today.day>invoice.doc_date.day
-	  invoice.doc_date=Date.today
+# 	  invoice.doc_date=Date.today
+	  invoice.approve=nil
 	  invoice.cancel=true
 	  @items=Item.find(:all, :conditions => { :invoice_id => invoice.id })
    	  @items.each do |item|
