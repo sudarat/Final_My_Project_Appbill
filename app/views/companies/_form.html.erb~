@@ -19,7 +19,7 @@
     <%= f.input :compstreet , :label => 'ถนน ',:hint => 'Ex. สุขุมวิท'%>
     <%= f.input :compsub_district , :label => 'ตำบล/แขวง ',:hint => 'Ex. สนามจันทร์'%>
     <%= f.input :compdistrict  , :label => 'อำเภอ/เขต ',:hint => 'Ex. เมือง'%>
-    <%= f.input :province , :label => "จังหวัด ", :as => :select , :member_label => :province_name , :include_blank => 'Change Province' %> 
+    <%= f.input :province , :label => "จังหวัด ", :as => :select , :member_label => :province_name , :include_blank => 'เลือกจังหวัด' %> 
     <%= f.input :comptel  , :label => 'เบอร์โทรศัพท์ ' ,:hint => 'Ex. 02-9310022,084-7797784' %>
     <%= f.input :compfax  , :as => :string , :label => 'เบอร์โทรสาร ' ,:hint => 'Ex. 02-9310022'%>
     <%= f.input :comptax  , :label => 'เลขประจำตัวผู้เสียภาษี ' ,:hint => 'Ex. 1223153721'%>
